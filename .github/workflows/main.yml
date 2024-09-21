@@ -14,4 +14,4 @@ jobs:
         uses: actions/checkout@v2
       
       - name: Run Docker Compose
-        run: docker compose -f server/compose.yml up --build -d
+        run: docker compose -f server/compose.yaml up --build -d
