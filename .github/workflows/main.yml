@@ -1,0 +1,17 @@
+name: Compose Docker Cloud Project
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  docker-compose:
+    runs-on: self-hosted
+    environment: docker
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      
+      - name: Run Docker Compose
+        run: docker compose -f server/docker-compose.yml up --build -d
