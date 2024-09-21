@@ -1,0 +1,43 @@
+version: '3.4'
+
+name: landl
+
+services:
+  ll.api:
+    image: ${DOCKER_REGISTRY-}llapi
+    container_name: ll.api
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__PgDbConnection=Server=ll.database;Database=LandL;User ID=postgres;Password=postgres;Trust Server Certificate=true;
+    depends_on:
+      ll.database:
+        condition: service_started
+    build:
+      context: .
+      dockerfile: L&L.API/Dockerfile
+    ports:
+      - "5000:5000"
+      - "5001:5001"
+    networks:
+      - dev-network
+
+  ll.database:
+    image: postgres:latest
+    container_name: ll.database
+    environment:
+      - POSTGRES_DB=LandL
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+    ports:
+      - 5435:5432
+    networks:
+      - dev-network
+
+networks:
+  dev-network:
+
+
+volumes:
+  pg_data:
