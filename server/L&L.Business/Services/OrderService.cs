@@ -217,8 +217,6 @@ namespace L_L.Business.Services
             deiveryUpdate.SenderPhone = req.senderPhone;
             deiveryUpdate.ReceiverName = req.receiverName;
             deiveryUpdate.ReceiverPhone = req.receiverPhone;
-            deiveryUpdate.PickUpLocation = req.pickUpLocation;
-            deiveryUpdate.DeliveryLocaTion = req.deliveryLocaTion;
             var resultUpdate = unitOfWorks.DeliveryInfoRepository.Update(deiveryUpdate);
             var result = await unitOfWorks.ProductRepository.Commit();
             if (result > 0)

@@ -13,7 +13,5 @@ namespace L_L.Business.Commons.Request
         public string? senderName { get; set; }
         public string? receiverPhone { get; set; }
         public string? senderPhone { get; set; }
-        public string? deliveryLocaTion { get; set; }
-        public string? pickUpLocation { get; set; }
     }
 }
