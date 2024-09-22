@@ -421,12 +421,16 @@ namespace L_L.Business.Services
             {
                 listOrderDetail = await unitOfWorks.OrderDetailRepository
                     .FindByCondition(x => x.OrderId == int.Parse(orderId) && x.SenderId == user.UserId)
+                    .Include(x => x.DeliveryInfoDetail)
+                    .Include(x =>x.ProductInfo)
                     .OrderByDescending(x => x.StartDate)
                     .ToListAsync();
             }else if (user.RoleID == 3)
             {
                 listOrderDetail = await unitOfWorks.OrderDetailRepository
                     .FindByCondition(x => x.OrderId == int.Parse(orderId))
+                    .Include(x => x.DeliveryInfoDetail)
+                    .Include(x =>x.ProductInfo)
                     .OrderByDescending(x => x.StartDate)
                     .ToListAsync();
                 if (!listOrderDetail.Any() || listOrderDetail == null)
