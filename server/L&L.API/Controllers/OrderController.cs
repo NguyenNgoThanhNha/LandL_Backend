@@ -193,7 +193,7 @@ namespace L_L.API.Controllers
             }
 
             // create order
-            var orderCreate = await orderService.CreateOrder(request.TotalAmount.ToString());
+            var orderCreate = await orderService.CreateOrder(request.TotalAmount.ToString(), request.PickupTime);
             if (orderCreate == null)
             {
                 return BadRequest(ApiResult<ResponseMessage>.Error(new ResponseMessage()

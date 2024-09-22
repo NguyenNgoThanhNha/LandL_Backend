@@ -59,14 +59,14 @@ namespace L_L.Business.Services
             return listOrderAdmin;
         }
 
-        public async Task<OrderModel> CreateOrder(string amount)
+        public async Task<OrderModel> CreateOrder(string amount, DateTime pickUpTime)
         {
             var order = new OrderModel();
             order.Status = StatusEnums.Processing.ToString();
             order.TotalAmount = decimal.Parse(amount);
             order.OrderCode = int.Parse(DateTimeOffset.Now.ToString("ffffff"));
             order.OrderCount = 1;
-            order.OrderDate = DateTime.Now;
+            order.OrderDate = pickUpTime;
             var orderCreate = await unitOfWorks.OrderRepository.AddAsync(_mapper.Map<Order>(order));
             var result = await unitOfWorks.OrderRepository.Commit();
             if (result > 0)
