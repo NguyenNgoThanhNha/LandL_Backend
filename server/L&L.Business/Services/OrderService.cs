@@ -155,6 +155,7 @@ namespace L_L.Business.Services
             
             // add truck to order detail
             orderDetail.TruckId = truckOfDriver.TruckId;
+            orderDetail.Status = StatusEnums.InProcess.ToString();
             
             unitOfWorks.TruckRepository.Update(truckOfDriver);
             unitOfWorks.OrderDetailRepository.Update(orderDetail);

@@ -19,6 +19,16 @@ namespace L_L.Business.Services
             this.unitOfWorks = unitOfWorks;
             this.mapper = mapper;
         }
+        
+        public async Task<OrderDetailsModel> GetOrderDetail(int id)
+        {
+            var order = await unitOfWorks.OrderDetailRepository.GetByIdAsync(id);
+            if (order != null)
+            {
+                return mapper.Map<OrderDetailsModel>(order);
+            }
+            return null;
+        }
 
         public async Task<List<OrderDetailsModel>> GetAll()
         {
@@ -127,6 +137,24 @@ namespace L_L.Business.Services
             var orderUpdate = mapper.Map<OrderDetails>(order);
             unitOfWorks.OrderDetailRepository.Update(orderUpdate);
             return await unitOfWorks.OrderDetailRepository.Commit() > 0;
+        }
+
+        public async Task<bool> UpdateStatusOrderDetail(StatusEnums statusEnums, OrderDetailsModel orderDetailsModel)
+        {
+            orderDetailsModel.Status = statusEnums.ToString();
+
+            var existingOrder = await unitOfWorks.OrderDetailRepository.GetByIdAsync(orderDetailsModel.OrderDetailId);
+            if (existingOrder == null)
+            {
+                return false;
+            }
+
+            mapper.Map(orderDetailsModel, existingOrder);
+
+            unitOfWorks.OrderDetailRepository.Update(existingOrder);
+
+            await unitOfWorks.OrderRepository.Commit();
+            return true;
         }
     }
 }

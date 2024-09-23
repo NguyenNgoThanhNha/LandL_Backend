@@ -246,6 +246,34 @@ namespace L_L.API.Controllers
                 message = "Update order status error!"
             }));
         }
+        
+        [HttpPut("Update-Status-OrderDetail/{id}")]
+        public async Task<IActionResult> UpdateStatusOrderDetail([FromRoute] string id, [FromBody] StatusEnums status)
+        {
+            var order = await orderDetailService.GetOrderDetail(int.Parse(id));
+            if (order == null)
+            {
+                return BadRequest(ApiResult<ResponseMessage>.Error(new ResponseMessage()
+                {
+                    message = "Order not found!"
+                }));
+            }
+
+            var result = await orderDetailService.UpdateStatusOrderDetail(status, order);
+
+            if (result)
+            {
+                return Ok(ApiResult<ResponseMessage>.Succeed(new ResponseMessage()
+                {
+                    message = "Update order status success!"
+                }));
+            }
+
+            return BadRequest(ApiResult<ResponseMessage>.Error(new ResponseMessage()
+            {
+                message = "Update order status error!"
+            }));
+        }
 
         [HttpGet("public-order")]
         public async Task<IActionResult> PublicOrder()
@@ -410,7 +438,7 @@ namespace L_L.API.Controllers
             }
             return Ok(ApiResult<ResponseMessage>.Succeed(new ResponseMessage()
             {
-                message =urlPayemnt
+                data = urlPayemnt
             }));
         }
     }
