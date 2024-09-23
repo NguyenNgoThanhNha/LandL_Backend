@@ -216,8 +216,8 @@ namespace L_L.API.Controllers
             // Set the refresh token in the cookie
             var cookieOptions = new CookieOptions
             {
-                HttpOnly = true,        // Accessible only by the server
-                Secure = true,          // Ensure it is only sent over HTTPS
+                HttpOnly = false,
+                Secure = false,   
                 SameSite = SameSiteMode.Strict, // Prevent CSRF
                 Expires = DateTime.UtcNow.AddDays(30) // Expiration time of 30 days
             };
