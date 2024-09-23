@@ -123,6 +123,7 @@ namespace L_L.API.Extensions
             services.AddScoped<CloudService>();
             services.AddScoped<ProductService>();
             services.AddScoped<DeliveryInfoService>();
+            services.AddScoped<TruckSevice>();
 
             services.AddSingleton<IAuthorizationHandler, AdminHandler>();
             return services;

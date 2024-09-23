@@ -16,6 +16,7 @@ namespace L_L.Business.Mappers
             CreateMap<OrderDetails, OrderDetailsModel>().ReverseMap();
             CreateMap<Product, ProductsModel>().ReverseMap();
             CreateMap<DeliveryInfo, DeliveryInfoModel>().ReverseMap();
+            CreateMap<Truck, TruckModel>().ReverseMap();
         }
     }
 }
