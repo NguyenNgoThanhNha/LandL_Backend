@@ -407,7 +407,9 @@ namespace L_L.Business.Services
 
         public async Task<OrderModel> GetOrderByOrderId(string orderId)
         {
-            var order = await unitOfWorks.OrderRepository.GetByIdAsync(int.Parse(orderId));
+            var order = await unitOfWorks.OrderRepository.FindByCondition(x => x.OrderId == int.Parse(orderId))
+                .Include(x => x.OrderDriver)
+                .FirstOrDefaultAsync();
             if (order == null)
             {
                 throw new BadRequestException("Order not found!");
