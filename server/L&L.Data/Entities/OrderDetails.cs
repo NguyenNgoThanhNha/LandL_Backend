@@ -8,10 +8,10 @@ namespace L_L.Data.Entities
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int OrderDetailId { get; set; }
-        public int OrderDetailCode { get; set; }
-        public int? Quantity { get; set; }
+        public int? OrderDetailCode { get; set; }
+        public string? reference { get; set; }
         public string? PaymentMethod { get; set; } = string.Empty;
-        public decimal? UnitPrice { get; set; }
+        public string? transactionDateTime { get; set; }
         public decimal TotalPrice { get; set; }
         public string Status { get; set; }
         public int? VehicleTypeId { get; set; }

@@ -285,9 +285,7 @@ namespace L_L.Business.Services
                         validOrders.Add(new OrderDetailsModel
                         {
                             OrderDetailId = orderDetail.OrderDetailId,
-                            Quantity = orderDetail.Quantity,
                             PaymentMethod = orderDetail.PaymentMethod,
-                            UnitPrice = orderDetail.UnitPrice,
                             TotalPrice = orderDetail.TotalPrice,
                             Status = orderDetail.Status,
                             /*                            VehicleTypeId = orderDetail.VehicleTypeId,*/
@@ -342,15 +340,20 @@ namespace L_L.Business.Services
                 new ItemData($"{product.ProductName}", 1, price)
             };
 
+            var orderCode = int.Parse(DateTimeOffset.Now.ToString("ffffff"));
+
             var paymentLinkRequest = new PaymentData(
-                orderCode: int.Parse(DateTimeOffset.Now.ToString("ffffff")), // Generate order code
+                orderCode: orderCode, // Generate order code
                 amount: amount, // Use the calculated price
-                description: "Payment for service", // Include product description
+                description: $"{orderCode.ToString()}", // Include product description
                 items: itemsList, // Pass the items list
                 returnUrl: $"{domain}/{req.Request.returnUrl}", // Fix string interpolation
                 cancelUrl: $"{domain}/{req.Request.cancelUrl}" // Fix string interpolation
             );
 
+            orderDetail.OrderDetailCode = orderCode;
+            unitOfWorks.OrderDetailRepository.Update(orderDetail);
+            await unitOfWorks.OrderDetailRepository.Commit();
             try
             {
                 var response = await payOS.createPaymentLink(paymentLinkRequest);

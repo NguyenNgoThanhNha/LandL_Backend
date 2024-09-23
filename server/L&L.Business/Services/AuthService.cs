@@ -118,11 +118,12 @@ namespace L_L.Business.Services
                     Token = null,
                 };
             }
-
+            
             return new LoginResult
             {
                 Authenticated = true,
-                Token = CreateJwtToken(user),
+                Token = CreateJwtToken(user, true),
+                Refresh = CreateJwtToken(user, false)
             };
         }
 
@@ -136,7 +137,8 @@ namespace L_L.Business.Services
                 return new LoginResult
                 {
                     Authenticated = true,
-                    Token = CreateJwtToken(user)
+                    Token = CreateJwtToken(user, true),
+                    Refresh = CreateJwtToken(user, false)
                 };
             }
 
@@ -163,7 +165,8 @@ namespace L_L.Business.Services
                 return new LoginResult
                 {
                     Authenticated = true,
-                    Token = CreateJwtToken(userRegister)
+                    Token = CreateJwtToken(userRegister, true),
+                    Refresh = CreateJwtToken(userRegister,false)
                 };
             }
 
@@ -361,7 +364,7 @@ namespace L_L.Business.Services
         }
 
 
-        private SecurityToken CreateJwtToken(User user)
+        private SecurityToken CreateJwtToken(User user, bool isAccess)
         {
             var utcNow = DateTime.UtcNow;
             var userRole = _unitOfWorks.UserRoleRepository.FindByCondition(u => u.RoleId == user.RoleID).FirstOrDefault();
@@ -369,21 +372,43 @@ namespace L_L.Business.Services
         {
             new(JwtRegisteredClaimNames.NameId, user.UserId.ToString()),
 /*            new(JwtRegisteredClaimNames.Sub, user.UserName),*/
-            new(JwtRegisteredClaimNames.Email, user.Email),
+            new Claim(JwtRegisteredClaimNames.Email, user.Email),
             new(ClaimTypes.Role, userRole.RoleName),
             new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
             new Claim("IsCustomer", userRole.RoleName == "Customer" ? "Customer" : "Admin")
         };
+            byte[] key;
 
-            var key = Encoding.ASCII.GetBytes(_jwtSettings.Key);
-
-            var tokenDescriptor = new SecurityTokenDescriptor()
+            if (isAccess)
             {
-                Subject = new ClaimsIdentity(authClaims),
-                SigningCredentials =
-                    new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256),
-                Expires = utcNow.Add(TimeSpan.FromHours(1)),
-            };
+                key = Encoding.ASCII.GetBytes(_jwtSettings.Key);
+            }
+            else
+            {
+                key = Encoding.ASCII.GetBytes(_jwtSettings.Refresh);
+            }
+
+            SecurityTokenDescriptor tokenDescriptor;
+            if (isAccess)
+            {
+                tokenDescriptor = new SecurityTokenDescriptor()
+                {
+                    Subject = new ClaimsIdentity(authClaims),
+                    SigningCredentials =
+                        new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256),
+                    Expires = utcNow.Add(TimeSpan.FromHours(1)),
+                };
+            }
+            else
+            {
+                tokenDescriptor = new SecurityTokenDescriptor()
+                {
+                    Subject = new ClaimsIdentity(authClaims),
+                    SigningCredentials =
+                        new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256),
+                    Expires = utcNow.Add(TimeSpan.FromDays(30)),
+                };
+            }
 
             var handler = new JwtSecurityTokenHandler();
 
@@ -391,5 +416,57 @@ namespace L_L.Business.Services
 
             return token;
         }
+        
+        public async Task<LoginResult> RefreshToken(string refreshToken)
+        {
+            if (string.IsNullOrWhiteSpace(refreshToken))
+            {
+                throw new BadRequestException("Refresh token is missing or invalid.");
+            }
+
+            try
+            {
+                var handler = new JwtSecurityTokenHandler();
+                var jwtToken = handler.ReadJwtToken(refreshToken);
+
+                // Check if the refresh token is expired
+                if (jwtToken.ValidTo < DateTime.UtcNow)
+                {
+                    throw new BadRequestException("Refresh token has expired.");
+                }
+
+                // Extract the email from the token claims
+                string email = jwtToken.Claims.FirstOrDefault(c => c.Type == "email")?.Value;
+
+                if (string.IsNullOrWhiteSpace(email))
+                {
+                    throw new BadRequestException("Email claim is missing in the token.");
+                }
+
+                // Find the user by email
+                var user = await _unitOfWorks.UserRepository.FindByCondition(x => x.Email == email).FirstOrDefaultAsync();
+                if (user is null)
+                {
+                    throw new BadRequestException("User not found.");
+                }
+
+                // Create a new access token
+                var newAccessToken = CreateJwtToken(user, true);
+
+                return new LoginResult
+                {
+                    Authenticated = true,
+                    Token = newAccessToken
+                };
+            }
+            catch (Exception ex)
+            {
+                // Handle any exceptions such as invalid token format, etc.
+                throw new BadRequestException($"Failed to refresh token: {ex.Message}");
+            }
+        }
+
+
+
     }
 }

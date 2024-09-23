@@ -6,5 +6,7 @@ namespace L_L.Business.Dtos
     {
         public bool Authenticated { get; set; }
         public SecurityToken? Token { get; set; }
+        public SecurityToken? Refresh { get; set; }
+
     }
 }

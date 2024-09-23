@@ -75,7 +75,6 @@ namespace L_L.Business.Services
                 TotalPrice = req.TotalAmount,
                 VehicleTypeId = req.VehicleTypeId,
                 StartDate = DateTime.Now,
-                OrderDetailCode = int.Parse(DateTimeOffset.Now.ToString("ffffff"))
             });
 
             var result = await unitOfWorks.OrderDetailRepository.Commit();
@@ -101,6 +100,33 @@ namespace L_L.Business.Services
             }
 
             return null;
+        }
+
+        public async Task<OrderDetailsModel> GetOrderByOrderDetailCode(string orderDetailCode)
+        {
+            // Ensure to handle the parsing correctly to avoid exceptions
+            if (!int.TryParse(orderDetailCode, out int code))
+            {
+                throw new BadRequestException("Invalid order detail code format!");
+            }
+
+            var orderDetail = await unitOfWorks.OrderDetailRepository
+                .FindByCondition(x => x.OrderDetailCode == code)
+                .FirstOrDefaultAsync();
+
+            if (orderDetail == null)
+            {
+                throw new BadRequestException("Order detail not found!");
+            }
+
+            return mapper.Map<OrderDetailsModel>(orderDetail);
+        }
+
+        public async Task<bool> UpdateOrderAfterPayment(OrderDetailsModel order)
+        {
+            var orderUpdate = mapper.Map<OrderDetails>(order);
+            unitOfWorks.OrderDetailRepository.Update(orderUpdate);
+            return await unitOfWorks.OrderDetailRepository.Commit() > 0;
         }
     }
 }

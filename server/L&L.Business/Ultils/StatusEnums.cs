@@ -3,10 +3,11 @@
     public enum StatusEnums
     {
         Processing = 1,
-        Paid = 2,
-        InRoute = 3,
-        Received = 4,
-        Delivered = 5,
-        Completed = 6,
+        InProcess = 2,
+        Paid = 3,
+        InRoute = 4,
+        Received = 5,
+        Delivered = 6,
+        Completed = 7,
     }
 }
