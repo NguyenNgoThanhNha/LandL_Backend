@@ -210,8 +210,21 @@ namespace L_L.API.Controllers
                 var result = ApiResult<Dictionary<string, string[]>>.Fail(new Exception("Username or password is invalid"));
                 return BadRequest(result);
             }
-
+            
             var handler = new JwtSecurityTokenHandler();
+            
+            // Set the refresh token in the cookie
+            var cookieOptions = new CookieOptions
+            {
+                HttpOnly = true,        // Accessible only by the server
+                Secure = true,          // Ensure it is only sent over HTTPS
+                SameSite = SameSiteMode.Strict, // Prevent CSRF
+                Expires = DateTime.UtcNow.AddDays(30) // Expiration time of 30 days
+            };
+
+            var refreshToken = handler.WriteToken(loginResult.Refresh);
+            Response.Cookies.Append("refreshToken", refreshToken, cookieOptions);
+            
             var res = new SignInResponse
             {
                 message = "Sign In Successfully",
@@ -239,6 +252,18 @@ namespace L_L.API.Controllers
             if (loginResult.Authenticated)
             {
                 var handler = new JwtSecurityTokenHandler();
+                
+                // Set the refresh token in the cookie
+                var cookieOptions = new CookieOptions
+                {
+                    HttpOnly = true,        // Accessible only by the server
+                    Secure = true,          // Ensure it is only sent over HTTPS
+                    SameSite = SameSiteMode.Strict, // Prevent CSRF
+                    Expires = DateTime.UtcNow.AddDays(30) // Expiration time of 30 days
+                };
+
+                Response.Cookies.Append("refreshToken", handler.WriteToken(loginResult.Refresh), cookieOptions);
+                
                 var res = new SignInResponse
                 {
                     message = "Sign In Successfully",
@@ -409,5 +434,53 @@ namespace L_L.API.Controllers
                 }));
             }
         }
+
+        [HttpGet("refresh-token")]
+        public async Task<IActionResult> RefreshToken()
+        {
+            // Retrieve the refresh token from the cookie
+            var refreshToken = Request.Cookies["refreshToken"];
+
+            if (string.IsNullOrEmpty(refreshToken))
+            {
+                return Unauthorized(ApiResult<ResponseMessage>.Error(new ResponseMessage()
+                {
+                    message = "No refresh token provided"
+                }));
+            }
+
+            try
+            {
+                // Call the service to validate and refresh the tokens
+                var loginResult = await authService.RefreshToken(refreshToken);
+
+                if (!loginResult.Authenticated)
+                {
+                    return Unauthorized(ApiResult<ResponseMessage>.Error(new ResponseMessage()
+                    {
+                        message = "Refresh token expired or invalid, please log in again"
+                    }));
+                }
+
+                // Return the new access token
+                var handler = new JwtSecurityTokenHandler();
+                var res = new SignInResponse
+                {
+                    message = "Token refreshed successfully",
+                    data = handler.WriteToken(loginResult.Token)
+                };
+
+                return Ok(ApiResult<SignInResponse>.Succeed(res));
+            }
+            catch (BadRequestException ex)
+            {
+                return BadRequest(ApiResult<ResponseMessage>.Error(new ResponseMessage()
+                {
+                    message = ex.Message
+                }));
+            }
+        }
+
+
     }
 }
