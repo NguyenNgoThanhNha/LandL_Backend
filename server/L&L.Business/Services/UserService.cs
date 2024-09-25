@@ -196,7 +196,7 @@ namespace L_L.Business.Services
             // Check if the token is expired
             if (jwtToken.ValidTo < DateTime.UtcNow)
             {
-                throw new UnauthorizedAccessException("Token has expired.");
+                throw new UnAuthorizedException("Token has expired.");
             }
 
             string email = jwtToken.Claims.FirstOrDefault(c => c.Type == "email")?.Value;

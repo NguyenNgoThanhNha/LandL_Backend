@@ -26,9 +26,8 @@ namespace L_L.Business.Middlewares
         // a NotFoundException is thrown when the resource requested by the client
         // cannot be found on the resource server
         { typeof(NotFoundException), HandleNotFoundException },
-
         { typeof(BadRequestException), HandleBadRequestException },
-
+        { typeof(UnAuthorizedException), HandleUnAuthorizedException },
         { typeof(RequestValidationException), HandleRequestValidationException },
     };
 
@@ -58,6 +57,12 @@ namespace L_L.Business.Middlewares
         private static async void HandleBadRequestException(HttpContext context, Exception ex)
         {
             context.Response.StatusCode = StatusCodes.Status400BadRequest;
+            await WriteExceptionMessageAsync(context, ex);
+        }
+        
+        private static async void HandleUnAuthorizedException(HttpContext context, Exception ex)
+        {
+            context.Response.StatusCode = StatusCodes.Status401Unauthorized;
             await WriteExceptionMessageAsync(context, ex);
         }
 
