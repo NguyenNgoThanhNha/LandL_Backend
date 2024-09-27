@@ -23,34 +23,39 @@ namespace L_L.Business.Services
             _cloudinary = new Cloudinary(account);
             _cloudinary.Api.Secure = true;
         }
-
+        
         public async Task<ImageUploadResult> UploadImageAsync(IFormFile file)
         {
-            if (file == null || file.Length == 0 ||
-                (file.ContentType != "image/png" && file.ContentType != "image/jpeg"))
+            if (file == null || file.Length == 0)
             {
-                throw new BadRequestException("File is null, empty, or not in PNG or JPEG format.");
+                throw new BadRequestException("File is null or empty.");
             }
 
-            using (var stream = file.OpenReadStream())
+            if (file.ContentType != "image/png" && file.ContentType != "image/jpeg")
             {
-                var uploadParams = new ImageUploadParams
-                {
-                    File = new FileDescription(file.FileName, stream),
-                    UploadPreset = "EXE201"
-                };
+                throw new BadRequestException("File is not in PNG or JPEG format.");
+            }
 
-                try
+            try
+            {
+                using (var stream = file.OpenReadStream())
                 {
-                    return await _cloudinary.UploadAsync(uploadParams);
+                    var uploadParams = new ImageUploadParams
+                    {
+                        File = new FileDescription(file.FileName, stream),
+                        UploadPreset = "LandL"
+                    };
+
+                    // Tải lên không đồng bộ
+                    return await Task.Run(() => _cloudinary.UploadAsync(uploadParams));
                 }
-                catch (Exception ex)
-                {
-                    // Xử lý lỗi tải lên Cloudinary
-                    throw new Exception("Failed to upload image to Cloudinary.", ex);
-                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Failed to upload image to Cloudinary.", ex);
             }
         }
+
 
 
 

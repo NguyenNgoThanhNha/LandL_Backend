@@ -1,5 +1,7 @@
 ﻿using AutoMapper;
+using L_L.Business.Models;
 using L_L.Data.UnitOfWorks;
+using Microsoft.EntityFrameworkCore;
 
 namespace L_L.Business.Services
 {
@@ -14,5 +16,10 @@ namespace L_L.Business.Services
             this.mapper = mapper;
         }
 
+        public async Task<List<VehicleTypeModel>> GetAllVehiType()
+        {
+            var list = unitOfWorks.VehicleTypeRepository.GetAll();
+            return mapper.Map<List<VehicleTypeModel>>(list);
+        }
     }
 }
