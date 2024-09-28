@@ -18,6 +18,8 @@ namespace L_L.Data.UnitOfWorks
         private DeliveryInfoRepository _deliveryInfoRepo;
         private TruckRepository _truckRepo;
         private ServiceCostRepository _serviceCostRepo;
+        private IdentityCardRepository _identityCardRepo;
+        private LicenseDriverRepository _licenseDriverRepo;
 
         public UnitOfWorks(AppDbContext dbContext)
         {
@@ -79,6 +81,16 @@ namespace L_L.Data.UnitOfWorks
         public ServiceCostRepository ServiceCostRepository
         {
             get { return _serviceCostRepo ??= new ServiceCostRepository(_dbContext); }
+        }
+        
+        public IdentityCardRepository IdentityCardRepository
+        {
+            get { return _identityCardRepo ??= new IdentityCardRepository(_dbContext); }
+        }
+        
+        public LicenseDriverRepository LicenseDriverRepository
+        {
+            get { return _licenseDriverRepo ??= new LicenseDriverRepository(_dbContext); }
         }
     }
 }
