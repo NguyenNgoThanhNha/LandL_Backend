@@ -26,4 +26,11 @@
     <ProjectReference Include="..\L&amp;L.Business\L&amp;L.Business.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Areas\LicenseDriverController\Controllers\" />
+    <Folder Include="Areas\LicenseDriverController\Data\" />
+    <Folder Include="Areas\LicenseDriverController\Models\" />
+    <Folder Include="Areas\LicenseDriverController\Views\" />
+  </ItemGroup>
+
 </Project>

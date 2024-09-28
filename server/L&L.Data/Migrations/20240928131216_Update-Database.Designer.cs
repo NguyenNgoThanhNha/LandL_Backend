@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace L_L.Data.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20240923055216_Update-Database")]
+    [Migration("20240928131216_Update-Database")]
     partial class UpdateDatabase
     {
         /// <inheritdoc />
@@ -500,6 +500,9 @@ namespace L_L.Data.Migrations
 
                     b.Property<string>("TotalDismension")
                         .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("TypeProduct")
                         .HasColumnType("text");
 
                     b.Property<string>("Weight")

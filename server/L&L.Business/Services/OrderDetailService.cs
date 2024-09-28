@@ -54,6 +54,7 @@ namespace L_L.Business.Services
             {
                 TotalDismension = $"{req.Width} x {req.Height} x {req.Length}",
                 Weight = req.Weight.ToString(),
+                TypeProduct = req.Type,
                 SenderId = userId,
                 Quantity = 1
             });
@@ -71,6 +72,7 @@ namespace L_L.Business.Services
                 OrderDate = DateTime.Now,
                 RecieveDate = req.PickupTime,
                 SenderName = userSender?.UserName,
+                SenderPhone = userSender?.PhoneNumber
             });
             var resultDeliveryInfo = await unitOfWorks.DeliveryInfoRepository.Commit();
 

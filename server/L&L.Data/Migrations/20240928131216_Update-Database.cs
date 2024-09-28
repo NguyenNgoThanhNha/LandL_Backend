@@ -71,6 +71,7 @@ namespace L_L.Data.Migrations
                     ProductDescription = table.Column<string>(type: "text", nullable: true),
                     TotalDismension = table.Column<string>(type: "text", nullable: false),
                     Weight = table.Column<string>(type: "text", nullable: false),
+                    TypeProduct = table.Column<string>(type: "text", nullable: true),
                     Image = table.Column<string>(type: "text", nullable: true),
                     SenderId = table.Column<int>(type: "integer", nullable: true)
                 },

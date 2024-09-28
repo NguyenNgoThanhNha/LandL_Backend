@@ -499,6 +499,9 @@ namespace L_L.Data.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<string>("TypeProduct")
+                        .HasColumnType("text");
+
                     b.Property<string>("Weight")
                         .IsRequired()
                         .HasColumnType("text");

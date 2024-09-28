@@ -9,5 +9,6 @@
         Received = 5,
         Delivered = 6,
         Completed = 7,
+        Canceled = 8
     }
 }
