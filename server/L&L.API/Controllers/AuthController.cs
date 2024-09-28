@@ -232,6 +232,53 @@ namespace L_L.API.Controllers
             };
             return Ok(ApiResult<SignInResponse>.Succeed(res));
         }
+        
+        [AllowAnonymous]
+        [HttpPost("login-mobile")]
+        public IActionResult LoginMobile([FromBody] LoginRequest req)
+        {
+            if (!ModelState.IsValid)
+            {
+                var errors = ModelState.Values
+                    .SelectMany(v => v.Errors)
+                    .Select(e => e.ErrorMessage)
+                    .ToList();
+
+                return BadRequest(ApiResult<List<string>>.Error(errors));
+            }
+
+            var loginResult = authService.SignIn(req.email, req.password);
+            if (loginResult.Token == null)
+            {
+                var result = ApiResult<Dictionary<string, string[]>>.Fail(new Exception("Username or password is invalid"));
+                return BadRequest(result);
+            }
+            
+            var handler = new JwtSecurityTokenHandler();
+            
+            // Set the refresh token in the cookie
+            var cookieOptions = new CookieOptions
+            {
+                HttpOnly = false,
+                Secure = false,   
+                SameSite = SameSiteMode.Strict, // Prevent CSRF
+                Expires = DateTime.UtcNow.AddDays(30) // Expiration time of 30 days
+            };
+
+            var refreshToken = handler.WriteToken(loginResult.Refresh);
+            Response.Cookies.Append("refreshToken", refreshToken, cookieOptions);
+            
+            var res = new SignInMobileResponse
+            {
+                message = "Sign In Successfully",
+                data = new Token()
+                {
+                    accessToken = handler.WriteToken(loginResult.Token),
+                    refreshToken = handler.WriteToken(loginResult.Refresh)
+                }
+            };
+            return Ok(ApiResult<SignInMobileResponse>.Succeed(res));
+        }
 
         [AllowAnonymous]
         [HttpPost("login-google")]
