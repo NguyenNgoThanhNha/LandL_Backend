@@ -21,17 +21,29 @@ namespace L_L.API.Controllers
             _userService = userService;
         }
 
+        [Authorize(Roles = "Driver")]
         [HttpGet("GetTruckOfUser")]
-        public async Task<IActionResult> GetTruckOfUser([FromQuery] string userId)
+        public async Task<IActionResult> GetTruckOfUser()
         {
-            if (userId == null)
+            if (!Request.Headers.TryGetValue("Authorization", out var token))
+            {
+                return Unauthorized(ApiResult<ResponseMessage>.Error(new ResponseMessage
+                {
+                    message = "Authorization header is missing."
+                }));
+            }
+
+            // Chia tách token
+            var tokenValue = token.ToString().Split(' ')[1];
+            var currentUser = await _userService.GetUserInToken(tokenValue);
+            if (currentUser == null)
             {
                 return BadRequest(ApiResult<ResponseMessage>.Error(new ResponseMessage()
                 {
-                    message = "User Id is required!"
+                    message = "User not found!"
                 }));
             }
-            var Truck = await _truckSevice.GetTruckByUserId(userId);
+            var Truck = await _truckSevice.GetTruckByUserId(currentUser.UserId.ToString());
             return Ok(ApiResult<GetTruckByUserResponse>.Succeed(new GetTruckByUserResponse()
             {
                 data = Truck
