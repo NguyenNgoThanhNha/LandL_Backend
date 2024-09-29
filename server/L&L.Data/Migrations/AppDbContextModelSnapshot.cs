@@ -734,6 +734,9 @@ namespace L_L.Data.Migrations
                     b.Property<string>("QRCode")
                         .HasColumnType("text");
 
+                    b.Property<string>("RefreshToken")
+                        .HasColumnType("text");
+
                     b.Property<int>("RoleID")
                         .HasColumnType("integer");
 

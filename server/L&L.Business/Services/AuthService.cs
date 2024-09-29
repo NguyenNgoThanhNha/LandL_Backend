@@ -92,7 +92,7 @@ namespace L_L.Business.Services
             }
         }
 
-        public LoginResult SignIn(string email, string password)
+        public async Task<LoginResult> SignIn(string email, string password)
         {
             var user = _unitOfWorks.AuthRepository.FindByCondition(u => u.Email == email).FirstOrDefault();
 
@@ -118,28 +118,47 @@ namespace L_L.Business.Services
                     Token = null,
                 };
             }
-            
-            return new LoginResult
-            {
-                Authenticated = true,
-                Token = CreateJwtToken(user, true),
-                Refresh = CreateJwtToken(user, false)
-            };
+            var handler = new JwtSecurityTokenHandler();
+            var refreshToken = CreateJwtToken(user, false);
+            user.RefreshToken =  handler.WriteToken(refreshToken);
+
+            _unitOfWorks.UserRepository.Update(user);
+           var result =  await _unitOfWorks.UserRepository.Commit();
+           if (result > 0)
+           {
+               return new LoginResult
+               {
+                   Authenticated = true,
+                   Token = CreateJwtToken(user, true),
+                   Refresh = refreshToken
+               };
+           }
+
+           return null;
         }
 
         public async Task<LoginResult> SignInWithGG(LoginWithGGRequest req)
         {
+            var handler = new JwtSecurityTokenHandler();
+            SecurityToken refreshToken = null;
             var user = _unitOfWorks.AuthRepository.FindByCondition(u => u.Email == req.Email).FirstOrDefault();
 
             if (user != null)
             {
+                refreshToken = CreateJwtToken(user, false);
+                user.RefreshToken =  handler.WriteToken(refreshToken);
                 // Generate JWT or another token here if needed.
-                return new LoginResult
+                _unitOfWorks.UserRepository.Update(user);
+                var resultExist =  await _unitOfWorks.UserRepository.Commit();
+                if (resultExist > 0)
                 {
-                    Authenticated = true,
-                    Token = CreateJwtToken(user, true),
-                    Refresh = CreateJwtToken(user, false)
-                };
+                    return new LoginResult
+                    {
+                        Authenticated = true,
+                        Token = CreateJwtToken(user, true),
+                        Refresh = refreshToken
+                    };
+                }
             }
 
             var userModel = new UserModel
@@ -153,9 +172,11 @@ namespace L_L.Business.Services
                 TypeLogin = "Google",
                 RoleID = req.TypeAccount == "Customer" ? 2 : req.TypeAccount == "Driver" ? 3 : 0 // Adjust 0 if you have a default RoleID
             };
-
+            
             var userRegister = _mapper.Map<User>(userModel);
-
+            refreshToken = CreateJwtToken(userRegister, false);
+            userRegister.RefreshToken =  handler.WriteToken(refreshToken);
+            
             await _unitOfWorks.UserRepository.AddAsync(userRegister);
             int result = await _unitOfWorks.UserRepository.Commit();
 
@@ -165,8 +186,7 @@ namespace L_L.Business.Services
                 return new LoginResult
                 {
                     Authenticated = true,
-                    Token = CreateJwtToken(userRegister, true),
-                    Refresh = CreateJwtToken(userRegister,false)
+                    Token = CreateJwtToken(userRegister, true)
                 };
             }
 

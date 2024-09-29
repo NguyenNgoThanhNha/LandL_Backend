@@ -133,6 +133,7 @@ namespace L_L.Data.Migrations
                     ModifyBy = table.Column<string>(type: "text", nullable: true),
                     ModifyDate = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
                     Status = table.Column<string>(type: "text", nullable: true),
+                    RefreshToken = table.Column<string>(type: "text", nullable: true),
                     TypeLogin = table.Column<string>(type: "text", nullable: false),
                     RoleID = table.Column<int>(type: "integer", nullable: false)
                 },

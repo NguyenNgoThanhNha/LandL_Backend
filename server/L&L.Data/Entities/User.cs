@@ -58,6 +58,8 @@ namespace L_L.Data.Entities
         public DateTimeOffset? ModifyDate { get; set; }
 
         public string? Status { get; set; }
+        
+        public string? RefreshToken { get; set; }
 
         public string TypeLogin { get; set; }
 

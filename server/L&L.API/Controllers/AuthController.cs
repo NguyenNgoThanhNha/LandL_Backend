@@ -194,7 +194,7 @@ namespace L_L.API.Controllers
 
         [AllowAnonymous]
         [HttpPost("login")]
-        public IActionResult Login([FromBody] LoginRequest req)
+        public async Task<IActionResult> Login([FromBody] LoginRequest req)
         {
             if (!ModelState.IsValid)
             {
@@ -206,7 +206,7 @@ namespace L_L.API.Controllers
                 return BadRequest(ApiResult<List<string>>.Error(errors));
             }
 
-            var loginResult = authService.SignIn(req.email, req.password);
+            var loginResult = await authService.SignIn(req.email, req.password);
             if (loginResult.Token == null)
             {
                 var result = ApiResult<Dictionary<string, string[]>>.Fail(new Exception("Username or password is invalid"));
@@ -214,18 +214,6 @@ namespace L_L.API.Controllers
             }
             
             var handler = new JwtSecurityTokenHandler();
-            
-            // Set the refresh token in the cookie
-            var cookieOptions = new CookieOptions
-            {
-                HttpOnly = false,
-                Secure = false,   
-                SameSite = SameSiteMode.Strict, // Prevent CSRF
-                Expires = DateTime.UtcNow.AddDays(30) // Expiration time of 30 days
-            };
-
-            var refreshToken = handler.WriteToken(loginResult.Refresh);
-            Response.Cookies.Append("refreshToken", refreshToken, cookieOptions);
             
             var res = new SignInResponse
             {
@@ -237,7 +225,7 @@ namespace L_L.API.Controllers
         
         [AllowAnonymous]
         [HttpPost("login-mobile")]
-        public IActionResult LoginMobile([FromBody] LoginRequest req)
+        public async Task<IActionResult> LoginMobile([FromBody] LoginRequest req)
         {
             if (!ModelState.IsValid)
             {
@@ -249,7 +237,7 @@ namespace L_L.API.Controllers
                 return BadRequest(ApiResult<List<string>>.Error(errors));
             }
 
-            var loginResult = authService.SignIn(req.email, req.password);
+            var loginResult = await authService.SignIn(req.email, req.password);
             if (loginResult.Token == null)
             {
                 var result = ApiResult<Dictionary<string, string[]>>.Fail(new Exception("Username or password is invalid"));
@@ -257,18 +245,6 @@ namespace L_L.API.Controllers
             }
             
             var handler = new JwtSecurityTokenHandler();
-            
-            // Set the refresh token in the cookie
-            var cookieOptions = new CookieOptions
-            {
-                HttpOnly = false,
-                Secure = false,   
-                SameSite = SameSiteMode.Strict, // Prevent CSRF
-                Expires = DateTime.UtcNow.AddDays(30) // Expiration time of 30 days
-            };
-
-            var refreshToken = handler.WriteToken(loginResult.Refresh);
-            Response.Cookies.Append("refreshToken", refreshToken, cookieOptions);
             
             var res = new SignInMobileResponse
             {
@@ -301,17 +277,6 @@ namespace L_L.API.Controllers
             if (loginResult.Authenticated)
             {
                 var handler = new JwtSecurityTokenHandler();
-                
-                // Set the refresh token in the cookie
-                var cookieOptions = new CookieOptions
-                {
-                    HttpOnly = true,        // Accessible only by the server
-                    Secure = true,          // Ensure it is only sent over HTTPS
-                    SameSite = SameSiteMode.Strict, // Prevent CSRF
-                    Expires = DateTime.UtcNow.AddDays(30) // Expiration time of 30 days
-                };
-
-                Response.Cookies.Append("refreshToken", handler.WriteToken(loginResult.Refresh), cookieOptions);
                 
                 var res = new SignInResponse
                 {
@@ -501,7 +466,7 @@ namespace L_L.API.Controllers
             // accessUser
             var currentUser = await authService.GetUserInToken(tokenValue);
             // Retrieve the refresh token from the cookie
-            var refreshToken = Request.Cookies["refreshToken"];
+            var refreshToken = currentUser.RefreshToken;
 
             if (string.IsNullOrEmpty(refreshToken))
             {

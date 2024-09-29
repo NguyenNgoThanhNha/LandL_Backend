@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace L_L.Data.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20240928131216_Update-Database")]
+    [Migration("20240929120758_Update-Database")]
     partial class UpdateDatabase
     {
         /// <inheritdoc />
@@ -735,6 +735,9 @@ namespace L_L.Data.Migrations
                         .HasColumnType("character varying(15)");
 
                     b.Property<string>("QRCode")
+                        .HasColumnType("text");
+
+                    b.Property<string>("RefreshToken")
                         .HasColumnType("text");
 
                     b.Property<int>("RoleID")
