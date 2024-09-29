@@ -499,7 +499,7 @@ namespace L_L.API.Controllers
             // Chia tách token
             var tokenValue = token.ToString().Split(' ')[1];
             // accessUser
-            var currentUser = await _userService.GetUserInToken(tokenValue);
+            var currentUser = await authService.GetUserInToken(tokenValue);
             // Retrieve the refresh token from the cookie
             var refreshToken = Request.Cookies["refreshToken"];
 

@@ -192,13 +192,7 @@ namespace L_L.Business.Services
             // Decode the JWT token
             var handler = new JwtSecurityTokenHandler();
             var jwtToken = handler.ReadJwtToken(token);
-
-            // Check if the token is expired
-            if (jwtToken.ValidTo < DateTime.UtcNow)
-            {
-                throw new BadRequestException("Token has expired.");
-            }
-
+            
             string email = jwtToken.Claims.FirstOrDefault(c => c.Type == "email")?.Value;
 
             var user = await _unitOfWorks.UserRepository.FindByCondition(x => x.Email == email).FirstOrDefaultAsync();

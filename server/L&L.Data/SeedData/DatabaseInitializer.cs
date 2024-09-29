@@ -81,6 +81,8 @@ namespace L_L.Data.SeedData
                     City = "HCM",
                     Address = "HCM",
                     PhoneNumber = $"012345678{i}",
+                    BirthDate = DateTime.Now,
+                    CreateDate = DateTime.Now,
                     Status = "Active",
                     TypeLogin = "Normal",
                     UserRole = customerRole, // Ensure `customerRole` is defined
@@ -97,6 +99,8 @@ namespace L_L.Data.SeedData
                     City = "HCM",
                     Address = "HCM",
                     PhoneNumber = $"018765432{i}",
+                    BirthDate = DateTime.Now,
+                    CreateDate = DateTime.Now,
                     Status = "Active",
                     TypeLogin = "Normal",
                     UserRole = driverRole, // Ensure `driverRole` is defined
@@ -113,6 +117,8 @@ namespace L_L.Data.SeedData
                 City = "HCM",
                 Address = "HCM",
                 PhoneNumber = $"0135724680",
+                BirthDate = DateTime.Now,
+                CreateDate = DateTime.Now,
                 Status = "Active",
                 TypeLogin = "Normal",
                 UserRole = adminRole, // Ensure `admin` is defined
