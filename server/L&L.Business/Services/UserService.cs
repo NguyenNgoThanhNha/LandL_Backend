@@ -8,6 +8,7 @@ using L_L.Data.UnitOfWorks;
 using Microsoft.EntityFrameworkCore;
 using System.IdentityModel.Tokens.Jwt;
 using System.Text.RegularExpressions;
+using L_L.Business.Commons.Response;
 
 namespace L_L.Business.Services
 {
@@ -24,11 +25,41 @@ namespace L_L.Business.Services
             this.cloudService = cloudService;
         }
 
-        public List<UserModel> GetAllUser()
+        public async Task<List<UserModel>> GetAllUser()
         {
-            var users = (unitOfWorks.UserRepository.GetAll()).ToList();
-            return _mapper.Map<List<UserModel>>(users);
+            var listUser = unitOfWorks.UserRepository.GetAll();
+            return _mapper.Map<List<UserModel>>(listUser);
         }
+        
+        public async Task<GetAllUserPaginationResponse> GetAllUser(int page)
+        {
+            const int pageSize = 4; // Set the number of objects per page
+            var users = await unitOfWorks.UserRepository.GetAll().OrderByDescending(x => x.CreateDate).ToListAsync();
+
+            // Calculate total count of users
+            var totalCount = users.Count();
+
+            // Calculate total pages
+            var totalPages = (int)Math.Ceiling(totalCount / (double)pageSize);
+
+            // Get the users for the current page
+            var pagedUsers = users.Skip((page - 1) * pageSize).Take(pageSize).ToList();
+
+            // Map to UserModel
+            var userModels = _mapper.Map<List<UserModel>>(pagedUsers);
+
+            return new GetAllUserPaginationResponse
+            {
+                data = userModels,
+                pagination = new Pagination
+                {
+                    page = page,
+                    totalPage = totalPages,
+                    totalCount = totalCount
+                }
+            };
+        }
+
 
         public async Task<UserModel> GetUserByEmail(string email)
         {
@@ -216,9 +247,125 @@ namespace L_L.Business.Services
             return userModel;
         }
 
+        public async Task<Dictionary<string, int>> GetAllRole()
+        {
+            var listUser = new Dictionary<string, int>();
+            listUser.Add("Admin", 0);
+            listUser.Add("Customer", 0);
+            listUser.Add("Driver", 0);
 
+            var listUserRole = unitOfWorks.UserRepository.GetAll();
+            foreach (var user in listUserRole)
+            {
+                if (user.RoleID == 1)
+                {
+                    listUser["Admin"]++;
+                }
+                else if (user.RoleID == 2)
+                {
+                    listUser["Customer"]++;
+                }
+                else if (user.RoleID == 3)
+                {
+                    listUser["Driver"]++;
+                }
+            }
 
+            return listUser;
+        }
 
+        public async Task<Dictionary<string, int>> GetUserAge()
+        {
+            // Initialize the dictionary for age groups
+            var listUser = new Dictionary<string, int>
+            {
+                { "20<30", 0 },
+                { "31<40", 0 },
+                { "41+", 0 }
+            };
+
+            // Fetch all users from the repository
+            var listUserRole = unitOfWorks.UserRepository.GetAll();
+
+            // Iterate through the users and increment the count based on their age
+            foreach (var user in listUserRole)
+            {
+                var birthDate = DateTime.Parse(user.BirthDate.ToString());
+                // Calculate the user's age
+                var age = DateTime.Now.Year - birthDate.Year;
+
+                // Adjust age if the birthday hasn't occurred yet this year
+                if (user.BirthDate > DateTime.Now.AddYears(-age)) 
+                {
+                    age--;
+                }
+
+                // Increment the appropriate age group
+                if (age >= 20 && age <= 30)
+                {
+                    listUser["20<30"]++;
+                }
+                else if (age >= 31 && age <= 40)
+                {
+                    listUser["31<40"]++;
+                }
+                else if (age >= 41)
+                {
+                    listUser["41+"]++;
+                }
+            }
+
+            return listUser;
+        }
+
+        public async Task<List<DataMonth>> GetUserTypeLoginByMonth()
+        {
+            // Initialize a list for the monthly login data
+            var DataMonth = new List<DataMonth>
+            {
+                new DataMonth { name = "Jan", googleAds = 0, normalAds = 0 },
+                new DataMonth { name = "Feb", googleAds = 0, normalAds = 0 },
+                new DataMonth { name = "Mar", googleAds = 0, normalAds = 0 },
+                new DataMonth { name = "Apr", googleAds = 0, normalAds = 0 },
+                new DataMonth { name = "May", googleAds = 0, normalAds = 0 },
+                new DataMonth { name = "Jun", googleAds = 0, normalAds = 0 },
+                new DataMonth { name = "Jul", googleAds = 0, normalAds = 0 },
+                new DataMonth { name = "Aug", googleAds = 0, normalAds = 0 },
+                new DataMonth { name = "Sep", googleAds = 0, normalAds = 0 },
+                new DataMonth { name = "Oct", googleAds = 0, normalAds = 0 },
+                new DataMonth { name = "Nov", googleAds = 0, normalAds = 0 },
+                new DataMonth { name = "Dec", googleAds = 0, normalAds = 0 }
+            };
+
+            // Fetch all users from the repository
+            var listUserTypeLogin =  unitOfWorks.UserRepository.GetAll();
+
+            // Iterate through users and increment the count based on login type and month
+            foreach (var user in listUserTypeLogin)
+            {
+                var createDate = DateTime.Parse(user.CreateDate.ToString());
+
+                // Map month to corresponding index (1-based to 0-based)
+                var monthIndex = createDate.Month - 1;
+
+                // Increment the appropriate login type count
+                if (user.TypeLogin == "Google") 
+                {
+                    DataMonth[monthIndex].googleAds++;
+                }
+                else if (user.TypeLogin == "Normal") 
+                {
+                    DataMonth[monthIndex].normalAds++;
+                }                
+                /*else if (user.TypeLogin == "Normal") 
+                {
+                    DataMonth[monthIndex].normalAds++;
+                }*/
+            }
+
+            return DataMonth;
+        }
+        
         private bool IsValidFullName(string fullName)
         {
             return Regex.IsMatch(fullName, "^[a-zA-Z\\s]*$");

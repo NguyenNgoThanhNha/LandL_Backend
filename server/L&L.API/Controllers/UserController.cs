@@ -35,7 +35,7 @@ namespace L_L.API.Controllers
                 }
             }
 
-            var users = userService.GetAllUser();
+            var users = await userService.GetAllUser();
             return Ok(ApiResult<GetAllUserResponse>.Succeed(new GetAllUserResponse()
             {
                 data = users
@@ -45,9 +45,9 @@ namespace L_L.API.Controllers
         // Roles
         [Authorize(Policy = "AdminOnly")]
         [HttpGet("Roles")]
-        public IActionResult GetBaseRole()
+        public async Task<IActionResult> GetBaseRole()
         {
-            var users = userService.GetAllUser();
+            var users = await userService.GetAllUser();
             return Ok(ApiResult<GetAllUserResponse>.Succeed(new GetAllUserResponse()
             {
                 data = users
@@ -88,12 +88,13 @@ namespace L_L.API.Controllers
 
         [Authorize(Roles = "Admin")]
         [HttpGet("Get-All")]
-        public IActionResult Get()
+        public async Task<IActionResult> Get([FromQuery] int page = 1)
         {
-            var users = userService.GetAllUser();
-            return Ok(ApiResult<GetAllUserResponse>.Succeed(new GetAllUserResponse()
+            var users = await userService.GetAllUser(page);
+            return Ok(ApiResult<GetAllUserPaginationResponse>.Succeed(new GetAllUserPaginationResponse()
             {
-                data = users
+                data = users.data,
+                pagination = users.pagination
             }));
         }
 
@@ -217,10 +218,98 @@ namespace L_L.API.Controllers
                     message = "Admin not found!"
                 }));
             }
+
+            var listUserRole = await userService.GetAllRole();
+            if (listUserRole == null)
+            {
+                return BadRequest(ApiResult<ResponseMessage>.Error(new ResponseMessage()
+                {
+                    message = "User not found!"
+                }));
+            }
             
+            return Ok(ApiResult<ListUserRoleResponse>.Succeed(new ListUserRoleResponse()
+            {
+                data = listUserRole
+            }));
+        }
+
+        [Authorize(Roles = "Admin")]
+        [HttpGet("GetUserAge")]
+        public async Task<IActionResult> GetUserAge()
+        {
+            // Lấy token từ header
+            if (!Request.Headers.TryGetValue("Authorization", out var token))
+            {
+                return Unauthorized(ApiResult<ResponseMessage>.Error(new ResponseMessage
+                {
+                    message = "Authorization header is missing."
+                }));
+            }
+
+            // Chia tách token
+            var tokenValue = token.ToString().Split(' ')[1];
+            var currentUser = await userService.GetUserInToken(tokenValue);
+            if (currentUser == null)
+            {
+                return BadRequest(ApiResult<ResponseMessage>.Error(new ResponseMessage()
+                {
+                    message = "Admin not found!"
+                }));
+            }
             
+            var listUserAge = await userService.GetUserAge();
+            if (listUserAge == null)
+            {
+                return BadRequest(ApiResult<ResponseMessage>.Error(new ResponseMessage()
+                {
+                    message = "User not found!"
+                }));
+            }
             
-            return Ok();
+            return Ok(ApiResult<ListUserRoleResponse>.Succeed(new ListUserRoleResponse()
+            {
+                data = listUserAge
+            }));
+        }
+
+        [Authorize(Roles = "Admin")]
+        [HttpGet("GetUserTypeLogin")]
+        public async Task<IActionResult> GetUserTypeLogin()
+        {
+            // Lấy token từ header
+            if (!Request.Headers.TryGetValue("Authorization", out var token))
+            {
+                return Unauthorized(ApiResult<ResponseMessage>.Error(new ResponseMessage
+                {
+                    message = "Authorization header is missing."
+                }));
+            }
+
+            // Chia tách token
+            var tokenValue = token.ToString().Split(' ')[1];
+            var currentUser = await userService.GetUserInToken(tokenValue);
+            if (currentUser == null)
+            {
+                return BadRequest(ApiResult<ResponseMessage>.Error(new ResponseMessage()
+                {
+                    message = "Admin not found!"
+                }));
+            }
+            
+            var listUserTypeLogin = await userService.GetUserTypeLoginByMonth();
+            if (listUserTypeLogin == null)
+            {
+                return BadRequest(ApiResult<ResponseMessage>.Error(new ResponseMessage()
+                {
+                    message = "User not found!"
+                }));
+            }
+            
+            return Ok(ApiResult<GetUserTypeLoginResponse>.Succeed(new GetUserTypeLoginResponse()
+            {
+                data = listUserTypeLogin
+            }));
         }
 
     }

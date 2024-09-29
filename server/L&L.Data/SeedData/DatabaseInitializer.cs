@@ -81,10 +81,11 @@ namespace L_L.Data.SeedData
                     City = "HCM",
                     Address = "HCM",
                     PhoneNumber = $"012345678{i}",
-                    BirthDate = DateTime.Now,
-                    CreateDate = DateTime.Now,
+                    BirthDate = DateTime.Now.AddYears(-20 - i),
+                    CreateDate = DateTime.Now.AddMonths(-i),
                     Status = "Active",
-                    TypeLogin = "Normal",
+                    TypeLogin = "Google",
+                    OTPCode = "0",
                     UserRole = customerRole, // Ensure `customerRole` is defined
                 };
                 users.Add(customer);
@@ -99,10 +100,11 @@ namespace L_L.Data.SeedData
                     City = "HCM",
                     Address = "HCM",
                     PhoneNumber = $"018765432{i}",
-                    BirthDate = DateTime.Now,
-                    CreateDate = DateTime.Now,
+                    BirthDate = DateTime.Now.AddYears(-30 - i),
+                    CreateDate = DateTime.Now.AddMonths(-i),
                     Status = "Active",
                     TypeLogin = "Normal",
+                    OTPCode = "0",
                     UserRole = driverRole, // Ensure `driverRole` is defined
                 };
                 users.Add(driver);
@@ -117,10 +119,11 @@ namespace L_L.Data.SeedData
                 City = "HCM",
                 Address = "HCM",
                 PhoneNumber = $"0135724680",
-                BirthDate = DateTime.Now,
+                BirthDate = DateTime.Now.AddYears(-42),
                 CreateDate = DateTime.Now,
                 Status = "Active",
                 TypeLogin = "Normal",
+                OTPCode = "0",
                 UserRole = adminRole, // Ensure `admin` is defined
             };
             users.Add(admin);
