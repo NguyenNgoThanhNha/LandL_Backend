@@ -17,11 +17,13 @@ namespace L_L.API.Controllers
     {
         private readonly AuthService authService;
         private readonly MailService mailService;
+        private readonly UserService _userService;
 
-        public AuthController(AuthService authService, MailService mailService)
+        public AuthController(AuthService authService, MailService mailService, UserService userService)
         {
             this.authService = authService;
             this.mailService = mailService;
+            _userService = userService;
         }
 
         [HttpPost("FirstStep")]
@@ -485,6 +487,19 @@ namespace L_L.API.Controllers
         [HttpGet("refresh-token")]
         public async Task<IActionResult> RefreshToken()
         {
+            // Lấy token từ header
+            if (!Request.Headers.TryGetValue("Authorization", out var token))
+            {
+                return Unauthorized(ApiResult<ResponseMessage>.Error(new ResponseMessage
+                {
+                    message = "Authorization header is missing."
+                }));
+            }
+            
+            // Chia tách token
+            var tokenValue = token.ToString().Split(' ')[1];
+            // accessUser
+            var currentUser = await _userService.GetUserInToken(tokenValue);
             // Retrieve the refresh token from the cookie
             var refreshToken = Request.Cookies["refreshToken"];
 
@@ -492,7 +507,17 @@ namespace L_L.API.Controllers
             {
                 return Unauthorized(ApiResult<ResponseMessage>.Error(new ResponseMessage()
                 {
-                    message = "No refresh token provided"
+                    message = "No refresh token provided, Please login again!"
+                }));
+            }
+            
+            // refreshUser
+            var refreshUser = await _userService.GetUserInToken(refreshToken);
+            if (currentUser.UserId != refreshUser.UserId)
+            {
+                return Unauthorized(ApiResult<ResponseMessage>.Error(new ResponseMessage()
+                {
+                    message = "AccessToken are invalid!"
                 }));
             }
 

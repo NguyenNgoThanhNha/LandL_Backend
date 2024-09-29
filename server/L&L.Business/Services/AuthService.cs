@@ -396,7 +396,7 @@ namespace L_L.Business.Services
                     Subject = new ClaimsIdentity(authClaims),
                     SigningCredentials =
                         new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256),
-                    Expires = utcNow.Add(TimeSpan.FromHours(1)),
+                    Expires = utcNow.Add(TimeSpan.FromMinutes(5)),
                 };
             }
             else
@@ -465,8 +465,5 @@ namespace L_L.Business.Services
                 throw new BadRequestException($"Failed to refresh token: {ex.Message}");
             }
         }
-
-
-
     }
 }
