@@ -290,7 +290,7 @@ namespace L_L.Business.Services
             // Iterate through the users and increment the count based on their age
             foreach (var user in listUserRole)
             {
-                var birthDate = DateTime.Parse(user.BirthDate.ToString());
+                var birthDate = DateTime.Parse(user?.BirthDate.ToString());
                 // Calculate the user's age
                 var age = DateTime.Now.Year - birthDate.Year;
 
