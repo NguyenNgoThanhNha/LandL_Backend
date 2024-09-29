@@ -455,7 +455,7 @@ namespace L_L.API.Controllers
             // Lấy token từ header
             if (!Request.Headers.TryGetValue("Authorization", out var token))
             {
-                return Unauthorized(ApiResult<ResponseMessage>.Error(new ResponseMessage
+                return BadRequest(ApiResult<ResponseMessage>.Error(new ResponseMessage
                 {
                     message = "Authorization header is missing."
                 }));
@@ -470,7 +470,7 @@ namespace L_L.API.Controllers
 
             if (string.IsNullOrEmpty(refreshToken))
             {
-                return Unauthorized(ApiResult<ResponseMessage>.Error(new ResponseMessage()
+                return BadRequest(ApiResult<ResponseMessage>.Error(new ResponseMessage()
                 {
                     message = "No refresh token provided, Please login again!"
                 }));
@@ -480,7 +480,7 @@ namespace L_L.API.Controllers
             var refreshUser = await _userService.GetUserInToken(refreshToken);
             if (currentUser.UserId != refreshUser.UserId)
             {
-                return Unauthorized(ApiResult<ResponseMessage>.Error(new ResponseMessage()
+                return BadRequest(ApiResult<ResponseMessage>.Error(new ResponseMessage()
                 {
                     message = "AccessToken are invalid!"
                 }));
@@ -493,7 +493,7 @@ namespace L_L.API.Controllers
 
                 if (!loginResult.Authenticated)
                 {
-                    return Unauthorized(ApiResult<ResponseMessage>.Error(new ResponseMessage()
+                    return BadRequest(ApiResult<ResponseMessage>.Error(new ResponseMessage()
                     {
                         message = "Refresh token expired or invalid, please log in again"
                     }));

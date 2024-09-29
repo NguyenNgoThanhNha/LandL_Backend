@@ -340,6 +340,9 @@ namespace L_L.Data.Migrations
                     b.Property<int?>("DeliveryInfoId")
                         .HasColumnType("integer");
 
+                    b.Property<decimal>("Distance")
+                        .HasColumnType("numeric");
+
                     b.Property<DateTime?>("EndDate")
                         .HasColumnType("timestamp without time zone");
 

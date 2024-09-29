@@ -16,6 +16,10 @@ public class CreateOrderRequest
     public string longTo { get; set; }
     [Required]
     public string latTo { get; set; }
+    
+    [Required(ErrorMessage = "Distance is required.")]
+    public decimal Distance { get; set; }
+    
     [Required]
     public DateTime PickupTime { get; set; } // Pickup time
     [Required]

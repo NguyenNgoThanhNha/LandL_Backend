@@ -87,6 +87,7 @@ namespace L_L.Business.Services
                 TotalPrice = req.TotalAmount,
                 VehicleTypeId = req.VehicleTypeId,
                 StartDate = DateTime.Now,
+                Distance = req.Distance
             });
 
             var result = await unitOfWorks.OrderDetailRepository.Commit();

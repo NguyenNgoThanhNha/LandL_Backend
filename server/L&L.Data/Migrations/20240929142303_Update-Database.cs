@@ -470,6 +470,7 @@ namespace L_L.Data.Migrations
                     transactionDateTime = table.Column<string>(type: "text", nullable: true),
                     TotalPrice = table.Column<decimal>(type: "numeric", nullable: false),
                     Status = table.Column<string>(type: "text", nullable: false),
+                    Distance = table.Column<decimal>(type: "numeric", nullable: false),
                     VehicleTypeId = table.Column<int>(type: "integer", nullable: true),
                     SenderId = table.Column<int>(type: "integer", nullable: true),
                     OrderId = table.Column<int>(type: "integer", nullable: true),

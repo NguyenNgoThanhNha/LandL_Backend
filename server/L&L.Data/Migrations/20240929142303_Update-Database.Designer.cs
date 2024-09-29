@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace L_L.Data.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20240929120758_Update-Database")]
+    [Migration("20240929142303_Update-Database")]
     partial class UpdateDatabase
     {
         /// <inheritdoc />
@@ -342,6 +342,9 @@ namespace L_L.Data.Migrations
 
                     b.Property<int?>("DeliveryInfoId")
                         .HasColumnType("integer");
+
+                    b.Property<decimal>("Distance")
+                        .HasColumnType("numeric");
 
                     b.Property<DateTime?>("EndDate")
                         .HasColumnType("timestamp without time zone");

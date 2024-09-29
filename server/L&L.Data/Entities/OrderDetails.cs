@@ -14,6 +14,7 @@ namespace L_L.Data.Entities
         public string? transactionDateTime { get; set; }
         public decimal TotalPrice { get; set; }
         public string Status { get; set; }
+        public decimal Distance { get; set; }
         public int? VehicleTypeId { get; set; }
 
         [ForeignKey("UserOrder")]

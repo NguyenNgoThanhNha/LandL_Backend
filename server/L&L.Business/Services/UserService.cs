@@ -34,7 +34,7 @@ namespace L_L.Business.Services
         public async Task<GetAllUserPaginationResponse> GetAllUser(int page)
         {
             const int pageSize = 4; // Set the number of objects per page
-            var users = await unitOfWorks.UserRepository.GetAll().OrderByDescending(x => x.CreateDate).ToListAsync();
+            var users = await unitOfWorks.UserRepository.GetAll().OrderByDescending(x => x.UserId).ToListAsync();
 
             // Calculate total count of users
             var totalCount = users.Count();
