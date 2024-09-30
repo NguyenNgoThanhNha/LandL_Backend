@@ -24,6 +24,7 @@ namespace L_L.API.Controllers
             this.userService = userService;
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpGet("GetAll")]
         public async Task<IActionResult> GetAllOrder()
         {
@@ -31,6 +32,54 @@ namespace L_L.API.Controllers
             return Ok(ApiResult<OrderListResponse>.Succeed(new OrderListResponse()
             {
                 data = listOrder
+            }));
+        }
+        
+        [Authorize(Roles = "Admin")]
+        [HttpGet("GetAllOrderForAdmin")]
+        public async Task<IActionResult> GetAllOrder([FromQuery] int page =1)
+        {
+            // Lấy token từ header
+            if (!Request.Headers.TryGetValue("Authorization", out var token))
+            {
+                return Unauthorized(ApiResult<ResponseMessage>.Error(new ResponseMessage
+                {
+                    message = "Authorization header is missing."
+                }));
+            }
+            var listOrder = await orderService.GetAllOrder(page);
+            return Ok(ApiResult<GetAllOrderPaginationResponse>.Succeed(new GetAllOrderPaginationResponse()
+            {
+                data = listOrder.data,
+                pagination = listOrder.pagination
+            }));
+        }
+
+        [Authorize(Roles = "Admin")]
+        [HttpGet("GetTotalOrderInYear")]
+        public async Task<IActionResult> GetTotalOrderInYear([FromQuery] int year =2024)
+        {
+            // Lấy token từ header
+            if (!Request.Headers.TryGetValue("Authorization", out var token))
+            {
+                return Unauthorized(ApiResult<ResponseMessage>.Error(new ResponseMessage
+                {
+                    message = "Authorization header is missing."
+                }));
+            }
+
+            var listData = await orderService.GetOrderInYear(year);
+            if (listData == null)
+            {
+                return BadRequest(ApiResult<ResponseMessage>.Error(new ResponseMessage
+                {
+                    message = "Order in year not found!"
+                }));
+            }
+
+            return Ok(ApiResult<GetOrderInYearResponse>.Succeed(new GetOrderInYearResponse()
+            {
+                data = listData
             }));
         }
 

@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using L_L.Business.Commons.Request;
+using L_L.Business.Commons.Response;
 using L_L.Business.Exceptions;
 using L_L.Business.Models;
 using L_L.Business.Ultils;
@@ -30,6 +31,35 @@ namespace L_L.Business.Services
         public async Task<List<OrderModel>> GetAll()
         {
             return _mapper.Map<List<OrderModel>>(await unitOfWorks.OrderRepository.GetAll().OrderByDescending(x => x.OrderDate).ToListAsync());
+        }
+        
+        public async Task<GetAllOrderPaginationResponse> GetAllOrder(int page)
+        {
+            const int pageSize = 4; // Set the number of objects per page
+            var orders = await unitOfWorks.OrderDetailRepository.GetAll().OrderByDescending(x => x.OrderId).ToListAsync();
+
+            // Calculate total count of orders
+            var totalCount = orders.Count();
+
+            // Calculate total pages
+            var totalPages = (int)Math.Ceiling(totalCount / (double)pageSize);
+
+            // Get the orders for the current page
+            var pagedOrders = orders.Skip((page - 1) * pageSize).Take(pageSize).ToList();
+
+            // Map to OrderModel
+            var orderModels = _mapper.Map<List<OrderDetailsModel>>(pagedOrders);
+
+            return new GetAllOrderPaginationResponse()
+            {
+                data = orderModels,
+                pagination = new Pagination
+                {
+                    page = page,
+                    totalPage = totalPages,
+                    totalCount = totalCount
+                }
+            };
         }
         
         public async Task<List<OrderAdminModel>> GetAllOrderForAdmin()
@@ -450,5 +480,40 @@ namespace L_L.Business.Services
             return null;
         }
 
+        public async Task<List<DataOrderCount>> GetOrderInYear(int year)
+        {
+            var DataCounts = new List<DataOrderCount>
+            {
+                new DataOrderCount { name = "Jan", count = 0 },
+                new DataOrderCount { name = "Feb", count = 0 },
+                new DataOrderCount { name = "Mar", count = 0 },
+                new DataOrderCount { name = "Apr", count = 0 },
+                new DataOrderCount { name = "May", count = 0 },
+                new DataOrderCount { name = "Jun", count = 0 },
+                new DataOrderCount { name = "Jul", count = 0 },
+                new DataOrderCount { name = "Aug", count = 0 },
+                new DataOrderCount { name = "Sep", count = 0 },
+                new DataOrderCount { name = "Oct", count = 0 },
+                new DataOrderCount { name = "Nov", count = 0 },
+                new DataOrderCount { name = "Dec", count = 0 }
+            };
+
+            var listOrderDetail = unitOfWorks.OrderDetailRepository.GetAll();
+
+            // Duyệt qua các chi tiết đơn hàng và đếm số đơn hàng dựa trên tháng
+            foreach (var orderDetail in listOrderDetail)
+            {
+                if (orderDetail.StartDate.Year == year)
+                {
+                    // Lấy chỉ số tháng tương ứng (tháng 1 là index 0)
+                    var monthIndex = orderDetail.StartDate.Month - 1;
+
+                    // Tăng số lượng đơn hàng của tháng tương ứng
+                    DataCounts[monthIndex].count++;
+                }
+            }
+
+            return DataCounts;
+        }
     }
 }
