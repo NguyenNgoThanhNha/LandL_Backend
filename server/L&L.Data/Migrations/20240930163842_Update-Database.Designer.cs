@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace L_L.Data.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20240929142303_Update-Database")]
+    [Migration("20240930163842_Update-Database")]
     partial class UpdateDatabase
     {
         /// <inheritdoc />
@@ -299,6 +299,9 @@ namespace L_L.Data.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("OrderId"));
 
+                    b.Property<decimal?>("DriverAmount")
+                        .HasColumnType("numeric");
+
                     b.Property<int?>("DriverId")
                         .HasColumnType("integer");
 
@@ -321,8 +324,14 @@ namespace L_L.Data.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<decimal?>("SystemAmount")
+                        .HasColumnType("numeric");
+
                     b.Property<decimal?>("TotalAmount")
                         .IsRequired()
+                        .HasColumnType("numeric");
+
+                    b.Property<decimal?>("VAT")
                         .HasColumnType("numeric");
 
                     b.HasKey("OrderId");

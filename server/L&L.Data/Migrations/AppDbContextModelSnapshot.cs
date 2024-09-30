@@ -296,6 +296,9 @@ namespace L_L.Data.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("OrderId"));
 
+                    b.Property<decimal?>("DriverAmount")
+                        .HasColumnType("numeric");
+
                     b.Property<int?>("DriverId")
                         .HasColumnType("integer");
 
@@ -318,8 +321,14 @@ namespace L_L.Data.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<decimal?>("SystemAmount")
+                        .HasColumnType("numeric");
+
                     b.Property<decimal?>("TotalAmount")
                         .IsRequired()
+                        .HasColumnType("numeric");
+
+                    b.Property<decimal?>("VAT")
                         .HasColumnType("numeric");
 
                     b.HasKey("OrderId");

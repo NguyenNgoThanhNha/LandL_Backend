@@ -93,7 +93,21 @@ namespace L_L.Business.Services
         {
             var order = new OrderModel();
             order.Status = StatusEnums.Processing.ToString();
-            order.TotalAmount = decimal.Parse(amount);
+            
+            // Parse the total amount from string to decimal
+            decimal totalAmount = decimal.Parse(amount);
+            order.TotalAmount = totalAmount;
+            
+            // Calculate the 10% charge on the total amount
+            decimal charge = totalAmount * 0.10m; // 10% of totalAmount
+            order.SystemAmount = charge;
+            
+            // Calculate VAT as 8% of the 10% charge
+            order.VAT = charge * 0.08m; // 8% of the charge
+
+            // Calculate DriverAmount (TotalAmount - Charge - VAT)
+            order.DriverAmount = totalAmount - charge - order.VAT;
+            
             order.OrderCode = int.Parse(DateTimeOffset.Now.ToString("ffffff"));
             order.OrderCount = 1;
             order.OrderDate = pickUpTime;
@@ -515,5 +529,53 @@ namespace L_L.Business.Services
 
             return DataCounts;
         }
+        
+        public async Task<List<DataAmount>> GetOrderAmountInYear(int year)
+        {
+            // Predefined list of months with initial values for total, system, and VAT amounts.
+            var dataCounts = new List<DataAmount>
+            {
+                new DataAmount { name = "Jan", total = 0, system = 0, vat = 0 },
+                new DataAmount { name = "Feb", total = 0, system = 0, vat = 0 },
+                new DataAmount { name = "Mar", total = 0, system = 0, vat = 0 },
+                new DataAmount { name = "Apr", total = 0, system = 0, vat = 0 },
+                new DataAmount { name = "May", total = 0, system = 0, vat = 0 },
+                new DataAmount { name = "Jun", total = 0, system = 0, vat = 0 },
+                new DataAmount { name = "Jul", total = 0, system = 0, vat = 0 },
+                new DataAmount { name = "Aug", total = 0, system = 0, vat = 0 },
+                new DataAmount { name = "Sep", total = 0, system = 0, vat = 0 },
+                new DataAmount { name = "Oct", total = 0, system = 0, vat = 0 },
+                new DataAmount { name = "Nov", total = 0, system = 0, vat = 0 },
+                new DataAmount { name = "Dec", total = 0, system = 0, vat = 0 }
+            };
+
+            // Fetch only the orders from the specified year, projecting only relevant fields
+            var listOrder = await unitOfWorks.OrderRepository
+                .GetAll()
+                .Where(o => o.OrderDate.Year == year)  // Filter by the year
+                .Select(o => new
+                {
+                    o.OrderDate,
+                    o.TotalAmount,
+                    o.SystemAmount,
+                    o.VAT
+                })
+                .ToListAsync();  // Asynchronously fetch orders from the database
+
+            // Iterate through the filtered orders
+            foreach (var order in listOrder)
+            {
+                // Calculate the month index (January is 0)
+                var monthIndex = order.OrderDate.Month - 1;
+
+                // Accumulate total, system amount, and VAT for the respective month
+                dataCounts[monthIndex].total += order.TotalAmount ?? 0;
+                dataCounts[monthIndex].system += order.SystemAmount ?? 0;
+                dataCounts[monthIndex].vat += order.VAT ?? 0;
+            }
+
+            return dataCounts;
+        }
+
     }
 }

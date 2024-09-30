@@ -14,6 +14,12 @@ namespace L_L.Data.Entities
 
         [Required]
         public decimal? TotalAmount { get; set; }
+        
+        public decimal? DriverAmount { get; set; }
+        
+        public decimal? SystemAmount { get; set; }
+        
+        public decimal? VAT { get; set; }
 
         public int? OrderCount { get; set; }
 

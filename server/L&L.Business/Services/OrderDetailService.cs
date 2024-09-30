@@ -69,7 +69,7 @@ namespace L_L.Business.Services
                 LatPickUp = req.latFrom,
                 LongDelivery = req.longTo,
                 LatDelivery = req.latTo,
-                OrderDate = DateTime.Now,
+                OrderDate = order.OrderDate,
                 RecieveDate = req.PickupTime,
                 SenderName = userSender?.UserName,
                 SenderPhone = userSender?.PhoneNumber
@@ -86,7 +86,7 @@ namespace L_L.Business.Services
                 OrderId = order.OrderId,
                 TotalPrice = req.TotalAmount,
                 VehicleTypeId = req.VehicleTypeId,
-                StartDate = DateTime.Now,
+                StartDate = order.OrderDate,
                 Distance = req.Distance
             });
 

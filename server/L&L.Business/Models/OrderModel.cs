@@ -9,7 +9,9 @@ public class OrderModel
     public int OrderId { get; set; }
     public int OrderCode { get; set; }
     public decimal? TotalAmount { get; set; }
-
+    public decimal? DriverAmount { get; set; }
+    public decimal? SystemAmount { get; set; }
+    public decimal? VAT { get; set; }
     public int? OrderCount { get; set; }
 
     public string Status { get; set; } = string.Empty;

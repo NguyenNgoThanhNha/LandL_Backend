@@ -59,5 +59,37 @@ namespace L_L.API.Controllers
                 data = identityCardUpdate
             }));
         }
+
+        [Authorize(Roles = "Driver")]
+        [HttpGet("GetIdentityCard")]
+        public async Task<IActionResult> GetIdentityCard()
+        {
+            // Lấy token từ header
+            if (!Request.Headers.TryGetValue("Authorization", out var token))
+            {
+                return Unauthorized(ApiResult<ResponseMessage>.Error(new ResponseMessage
+                {
+                    message = "Authorization header is missing."
+                }));
+            }
+            
+            // Chia tách token
+            var tokenValue = token.ToString().Split(' ')[1];
+            var currentUser = await _userService.GetUserInToken(tokenValue);
+            if (currentUser == null || currentUser.RoleID != 3)
+            {
+                return BadRequest(ApiResult<ResponseMessage>.Error(new ResponseMessage()
+                {
+                    message = "Driver not found!"
+                }));
+            }
+
+            var identityCard = await _identityCardService.GetIdentityCard(currentUser.UserId);
+
+            return Ok(ApiResult<GetIdentityCardResponse>.Succeed(new GetIdentityCardResponse()
+            {
+                data = identityCard
+            }));
+        }
     }
 }

@@ -490,5 +490,34 @@ namespace L_L.API.Controllers
                 data = urlPayemnt
             }));
         }
+
+        [Authorize(Roles = "Admin")]
+        [HttpGet("GetAmountInYear")]
+        public async Task<IActionResult> GetAmountInYear([FromQuery] int year = 2024)
+        {
+            // Lấy token từ header
+            if (!Request.Headers.TryGetValue("Authorization", out var token))
+            {
+                return Unauthorized(ApiResult<ResponseMessage>.Error(new ResponseMessage
+                {
+                    message = "Authorization header is missing."
+                }));
+            }
+
+            var listData = await orderService.GetOrderAmountInYear(year);
+            if (listData == null)
+            {
+                return BadRequest(ApiResult<ResponseMessage>.Error(new ResponseMessage
+                {
+                    message = "Data amount in year not found!"
+                })); 
+            }
+            
+            return Ok(ApiResult<GetOrderAmountResponse>.Succeed(new GetOrderAmountResponse()
+            {
+                data = listData
+            }));
+        }
+        
     }
 }

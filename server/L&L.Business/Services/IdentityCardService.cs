@@ -1,9 +1,11 @@
 ﻿using AutoMapper;
 using L_L.Business.Commons.Request;
+using L_L.Business.Exceptions;
 using L_L.Business.Models;
 using L_L.Data.Entities;
 using L_L.Data.UnitOfWorks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace L_L.Business.Services;
 
@@ -109,6 +111,17 @@ public class IdentityCardService
         }
 
         return null;
+    }
+
+    public async Task<IdentityCardModel> GetIdentityCard(int driverId)
+    {
+        var identityCard = await _unitOfWorks.IdentityCardRepository.FindByCondition(x => x.UserId == driverId)
+            .FirstOrDefaultAsync();
+        if (identityCard == null)
+        {
+            throw new BadRequestException("IdentityCard of user not found!");
+        }
+        return _mapper.Map<IdentityCardModel>(identityCard);
     }
 }
 
