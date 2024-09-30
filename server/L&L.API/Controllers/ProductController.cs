@@ -31,7 +31,7 @@ namespace L_L.API.Controllers
             }
 
             // Validate request parameters
-            if (req.Width <= 0 || req.Length <= 0 || req.Width <= 0 || req.Height <= 0 || req.Distance <= 0)
+            if (req.Weight <= 0 || req.Length <= 0 || req.Width <= 0 || req.Height <= 0 || req.Distance <= 0)
             {
                 return BadRequest(ApiResult<ResponseMessage>.Error(new ResponseMessage
                 {
@@ -40,7 +40,7 @@ namespace L_L.API.Controllers
             }
 
             // Convert weight from kg to tons (1 ton = 1000 kg)
-            decimal weightTons = req.Width / 1000m;
+            decimal weightTons = req.Weight / 1000m;
 
             // Tìm package type phù hợp với yêu cầu
             var packetTypeMatch = await packageTypeService.FilterPacketType(weightTons, req.Length, req.Width, req.Height);
