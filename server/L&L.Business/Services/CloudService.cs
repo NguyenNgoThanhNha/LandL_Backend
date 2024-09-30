@@ -31,10 +31,17 @@ namespace L_L.Business.Services
                 throw new BadRequestException("File is null or empty.");
             }
 
-            if (file.ContentType != "image/png" && file.ContentType != "image/jpeg")
+            /*if (file.ContentType != "image/png" && 
+                file.ContentType != "image/jpeg" &&
+                file.ContentType != "image/jpg" && 
+                file.ContentType != "image/gif" && 
+                file.ContentType != "image/bmp" && 
+                file.ContentType != "image/webp" &&
+                file.ContentType != "image/heic" && 
+                file.ContentType != "image/tiff")
             {
-                throw new BadRequestException("File is not in PNG or JPEG format.");
-            }
+                throw new BadRequestException("File is not in a supported image format (PNG, JPEG, JPG, GIF, BMP, WEBP, HEIC, or TIFF).");
+            }*/
 
             try
             {
