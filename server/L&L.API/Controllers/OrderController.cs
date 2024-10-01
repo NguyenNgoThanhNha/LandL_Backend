@@ -282,11 +282,11 @@ namespace L_L.API.Controllers
 
             var result = await orderService.UpdateStatus(status, order);
 
-            if (result)
+            if (result != null)
             {
-                return Ok(ApiResult<ResponseMessage>.Succeed(new ResponseMessage()
+                return Ok(ApiResult<GetOrderResponse>.Succeed(new GetOrderResponse()
                 {
-                    message = "Update order status success!"
+                    data = result
                 }));
             }
 
@@ -310,11 +310,11 @@ namespace L_L.API.Controllers
 
             var result = await orderDetailService.UpdateStatusOrderDetail(status, order);
 
-            if (result)
+            if (result != null)
             {
-                return Ok(ApiResult<ResponseMessage>.Succeed(new ResponseMessage()
+                return Ok(ApiResult<GetOrderDetailResponse>.Succeed(new GetOrderDetailResponse()
                 {
-                    message = "Update order status success!"
+                    data = result
                 }));
             }
 
@@ -359,16 +359,16 @@ namespace L_L.API.Controllers
             var currentUser = await userService.GetUserInToken(tokenValue);
 
             var result = await orderService.AddDriverToOrderDetail(req, currentUser.UserId);
-            if (!result)
+            if (result == null)
             {
                 return BadRequest(ApiResult<ResponseMessage>.Error(new ResponseMessage()
                 {
                     message = "Error in accept order!"
                 }));
             }
-            return Ok(ApiResult<ResponseMessage>.Succeed(new ResponseMessage()
+            return Ok(ApiResult<GetOrderDetailResponse>.Succeed(new GetOrderDetailResponse()
             {
-                message = "Accept order success"
+                data = result
             }));
         }
 

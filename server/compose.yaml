@@ -21,7 +21,7 @@ services:
       database:
         condition: service_started
   database:
-    image: postgres:latest
+    image: postgres:16.4
     container_name: database
     environment:
       - POSTGRES_DB=LandL

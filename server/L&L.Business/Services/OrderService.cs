@@ -132,22 +132,27 @@ namespace L_L.Business.Services
             return null;
         }
 
-        public async Task<bool> UpdateStatus(StatusEnums status, OrderModel order)
+        public async Task<OrderModel> UpdateStatus(StatusEnums status, OrderModel order)
         {
             order.Status = status.ToString();
 
             var existingOrder = await unitOfWorks.OrderRepository.GetByIdAsync(order.OrderId);
             if (existingOrder == null)
             {
-                return false;
+                throw new BadRequestException("Order not found!");
             }
 
             _mapper.Map(order, existingOrder);
 
-            unitOfWorks.OrderRepository.Update(existingOrder);
+           var orderUpdate = unitOfWorks.OrderRepository.Update(existingOrder);
 
-            await unitOfWorks.OrderRepository.Commit();
-            return true;
+          var result =  await unitOfWorks.OrderRepository.Commit();
+          if (result > 0)
+          {
+              return _mapper.Map<OrderModel>(orderUpdate);
+          }
+
+          return null;
         }
 
         public async Task<List<OrderDetailsModel>> PublicOrder()
@@ -163,7 +168,7 @@ namespace L_L.Business.Services
             return _mapper.Map<List<OrderDetailsModel>>(listOrderDetail);
         }
 
-        public async Task<bool> AddDriverToOrderDetail(AcceptDriverRequest req, int driverId)
+        public async Task<OrderDetailsModel> AddDriverToOrderDetail(AcceptDriverRequest req, int driverId)
         {
             var orderDetail = await unitOfWorks.OrderDetailRepository
                 .FindByCondition(x => x.OrderDetailId == int.Parse(req.orderDetailId))
@@ -204,11 +209,16 @@ namespace L_L.Business.Services
             orderDetail.Status = StatusEnums.InProcess.ToString();
 
             unitOfWorks.TruckRepository.Update(truckOfDriver);
-            unitOfWorks.OrderDetailRepository.Update(orderDetail);
+            var orderDetailUpdate =   unitOfWorks.OrderDetailRepository.Update(orderDetail);
 
             var result = await unitOfWorks.OrderRepository.Commit();
 
-            return result > 0;
+            if (result > 0)
+            {
+                return _mapper.Map<OrderDetailsModel>(orderDetailUpdate);
+            }
+
+            return null;;
         }
 
 

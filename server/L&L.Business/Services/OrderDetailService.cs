@@ -142,22 +142,26 @@ namespace L_L.Business.Services
             return await unitOfWorks.OrderDetailRepository.Commit() > 0;
         }
 
-        public async Task<bool> UpdateStatusOrderDetail(StatusEnums statusEnums, OrderDetailsModel orderDetailsModel)
+        public async Task<OrderDetailsModel> UpdateStatusOrderDetail(StatusEnums statusEnums, OrderDetailsModel orderDetailsModel)
         {
             orderDetailsModel.Status = statusEnums.ToString();
 
             var existingOrder = await unitOfWorks.OrderDetailRepository.GetByIdAsync(orderDetailsModel.OrderDetailId);
             if (existingOrder == null)
             {
-                return false;
+                throw new BadRequestException("Order detail not found!");
             }
 
             mapper.Map(orderDetailsModel, existingOrder);
 
-            unitOfWorks.OrderDetailRepository.Update(existingOrder);
+            var orderDetailUpdate =  unitOfWorks.OrderDetailRepository.Update(existingOrder);
 
-            await unitOfWorks.OrderRepository.Commit();
-            return true;
+           var result = await unitOfWorks.OrderRepository.Commit();
+           if (result > 0)
+           {
+               return mapper.Map<OrderDetailsModel>(orderDetailUpdate);
+           }
+            return null;
         }
     }
 }
