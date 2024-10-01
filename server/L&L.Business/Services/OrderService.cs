@@ -172,7 +172,11 @@ namespace L_L.Business.Services
         {
             var orderDetail = await unitOfWorks.OrderDetailRepository
                 .FindByCondition(x => x.OrderDetailId == int.Parse(req.orderDetailId))
+                .Include(x => x.OrderInfo)
                 .Include(x => x.ProductInfo)
+                .Include(x => x.DeliveryInfoDetail)
+                .Include(x => x.UserOrder)
+                .Include(x => x.TruckInfo)
                 .FirstOrDefaultAsync();
             if (orderDetail == null)
             {

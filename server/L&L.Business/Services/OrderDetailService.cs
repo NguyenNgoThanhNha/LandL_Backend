@@ -146,7 +146,12 @@ namespace L_L.Business.Services
         {
             orderDetailsModel.Status = statusEnums.ToString();
 
-            var existingOrder = await unitOfWorks.OrderDetailRepository.GetByIdAsync(orderDetailsModel.OrderDetailId);
+            var existingOrder = await unitOfWorks.OrderDetailRepository.FindByCondition(x => x.OrderDetailId == orderDetailsModel.OrderDetailId)
+                .Include(x => x.OrderInfo)
+                .Include(x => x.ProductInfo)
+                .Include(x => x.DeliveryInfoDetail)
+                .Include(x => x.UserOrder)
+                .Include(x => x.TruckInfo).FirstOrDefaultAsync();
             if (existingOrder == null)
             {
                 throw new BadRequestException("Order detail not found!");
