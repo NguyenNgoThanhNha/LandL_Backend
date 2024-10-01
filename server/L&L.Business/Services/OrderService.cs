@@ -355,7 +355,7 @@ namespace L_L.Business.Services
                     // Tính khoảng cách theo mét
                     var distanceToDelivery = transformedDriverLocation.Distance(transformedPickupLocation);
 
-                    if (distanceToDelivery <= 15000) // Ví dụ: trong bán kính 5km
+                    if (distanceToDelivery <= 30000) // Ví dụ: trong bán kính 30km
                     {
                         validOrders.Add(new OrderDetailsModel
                         {
