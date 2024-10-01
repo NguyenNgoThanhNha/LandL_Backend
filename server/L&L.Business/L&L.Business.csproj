@@ -12,7 +12,9 @@
     <PackageReference Include="MailKit" Version="4.7.1.1" />
     <PackageReference Include="MimeKit" Version="4.7.1" />
     <PackageReference Include="NetTopologySuite" Version="2.5.0" />
+    <PackageReference Include="NetTopologySuite.CoordinateSystems" Version="1.15.3" />
     <PackageReference Include="payOS" Version="1.0.6" />
+    <PackageReference Include="ProjNET4GeoAPI" Version="1.4.1" />
   </ItemGroup>
 
   <ItemGroup>

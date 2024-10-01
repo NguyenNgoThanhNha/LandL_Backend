@@ -410,7 +410,7 @@ namespace L_L.Business.Services
                     Subject = new ClaimsIdentity(authClaims),
                     SigningCredentials =
                         new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256),
-                    Expires = utcNow.Add(TimeSpan.FromMinutes(5)),
+                    Expires = utcNow.Add(TimeSpan.FromHours(1)),
                 };
             }
             else

@@ -460,7 +460,10 @@ namespace L_L.API.Controllers
                 }));
             }
 
-            return Ok(ApiResult<List<OrderDetailsModel>>.Succeed(listOrder));
+            return Ok(ApiResult<GetOrderDriverResponse>.Succeed(new GetOrderDriverResponse()
+            {
+                data = listOrder
+            }));
         }
 
         [HttpPost("ConfirmOrder")]
