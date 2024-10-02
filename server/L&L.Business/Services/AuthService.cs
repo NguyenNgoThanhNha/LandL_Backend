@@ -171,6 +171,7 @@ namespace L_L.Business.Services
                 OTPCode = "0",
                 TypeLogin = "Google",
                 CreateDate = DateTimeOffset.Now,
+                BirthDate = DateTime.Now,
                 RoleID = req.TypeAccount == "Customer" ? 2 : req.TypeAccount == "Driver" ? 3 : 0 // Adjust 0 if you have a default RoleID
             };
             
