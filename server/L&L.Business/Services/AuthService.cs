@@ -45,6 +45,7 @@ namespace L_L.Business.Services
                 }
                 user.Status = "InActive";
                 user.CreateDate = DateTimeOffset.Now.AddMinutes(2);
+                user.BirthDate = DateTime.Now;
                 user.Password = SecurityUtil.Hash(req.Password);
                 user.OTPCode = new Random().Next(100000, 999999).ToString();
                 user.TypeLogin = "Normal";
@@ -71,6 +72,7 @@ namespace L_L.Business.Services
             userEntity.Status = "InActive";
             userEntity.CreateDate = DateTimeOffset.Now.AddMinutes(2);
             userEntity.Password = SecurityUtil.Hash(req.Password!);
+            userEntity.BirthDate = DateTime.Now;
             userEntity.TypeLogin = "Normal";
             var existedUser = _unitOfWorks.UserRepository.FindByCondition(x => x.Email == req.Email).FirstOrDefault();
             if (existedUser != null)
