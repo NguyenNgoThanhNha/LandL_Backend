@@ -146,12 +146,7 @@ namespace L_L.Business.Services
         {
             orderDetailsModel.Status = statusEnums.ToString();
 
-            var existingOrder = await unitOfWorks.OrderDetailRepository.FindByCondition(x => x.OrderDetailId == orderDetailsModel.OrderDetailId)
-                .Include(x => x.OrderInfo)
-                .Include(x => x.ProductInfo)
-                .Include(x => x.DeliveryInfoDetail)
-                .Include(x => x.UserOrder)
-                .Include(x => x.TruckInfo).FirstOrDefaultAsync();
+            var existingOrder = await unitOfWorks.OrderDetailRepository.GetByIdAsync(orderDetailsModel.OrderDetailId);
             if (existingOrder == null)
             {
                 throw new BadRequestException("Order detail not found!");
@@ -161,10 +156,19 @@ namespace L_L.Business.Services
 
             var orderDetailUpdate =  unitOfWorks.OrderDetailRepository.Update(existingOrder);
 
+            var orderDetailRes = await unitOfWorks.OrderDetailRepository
+                .FindByCondition(x => x.OrderDetailId == orderDetailUpdate.OrderDetailId)
+                .Include(x => x.OrderInfo)
+                .Include(x => x.ProductInfo)
+                .Include(x => x.DeliveryInfoDetail)
+                .Include(x => x.UserOrder)
+                .Include(x => x.TruckInfo)
+                .FirstOrDefaultAsync();
+
            var result = await unitOfWorks.OrderRepository.Commit();
            if (result > 0)
            {
-               return mapper.Map<OrderDetailsModel>(orderDetailUpdate);
+               return mapper.Map<OrderDetailsModel>(orderDetailRes);
            }
             return null;
         }

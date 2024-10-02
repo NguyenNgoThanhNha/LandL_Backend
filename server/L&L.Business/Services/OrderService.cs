@@ -170,14 +170,7 @@ namespace L_L.Business.Services
 
         public async Task<OrderDetailsModel> AddDriverToOrderDetail(AcceptDriverRequest req, int driverId)
         {
-            var orderDetail = await unitOfWorks.OrderDetailRepository
-                .FindByCondition(x => x.OrderDetailId == int.Parse(req.orderDetailId))
-                .Include(x => x.OrderInfo)
-                .Include(x => x.ProductInfo)
-                .Include(x => x.DeliveryInfoDetail)
-                .Include(x => x.UserOrder)
-                .Include(x => x.TruckInfo)
-                .FirstOrDefaultAsync();
+            var orderDetail = await unitOfWorks.OrderDetailRepository.GetByIdAsync(int.Parse(req.orderDetailId));
             if (orderDetail == null)
             {
                 throw new BadRequestException("Order detail not found!");
@@ -215,11 +208,20 @@ namespace L_L.Business.Services
             unitOfWorks.TruckRepository.Update(truckOfDriver);
             var orderDetailUpdate =   unitOfWorks.OrderDetailRepository.Update(orderDetail);
 
+            var orderDetailRes = await unitOfWorks.OrderDetailRepository
+                .FindByCondition(x => x.OrderDetailId == orderDetailUpdate.OrderDetailId)
+                .Include(x => x.OrderInfo)
+                .Include(x => x.ProductInfo)
+                .Include(x => x.DeliveryInfoDetail)
+                .Include(x => x.UserOrder)
+                .Include(x => x.TruckInfo)
+                .FirstOrDefaultAsync();
+            
             var result = await unitOfWorks.OrderRepository.Commit();
 
             if (result > 0)
             {
-                return _mapper.Map<OrderDetailsModel>(orderDetailUpdate);
+                return _mapper.Map<OrderDetailsModel>(orderDetailRes);
             }
 
             return null;;
