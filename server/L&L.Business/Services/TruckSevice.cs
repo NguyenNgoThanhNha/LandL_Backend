@@ -49,6 +49,7 @@ public class TruckSevice
             DimensionsWidth = truckRequest.DimensionsWidth,
             DimensionsHeight = truckRequest.DimensionsHeight,
             VehicleTypeId = truckRequest.VehicleTypeId,
+            TotalBill = truckRequest.TotalBill,
             UserId = userId
         };
         var TruckCreate =  _mapper.Map<Truck>(TruckModelNew);
