@@ -343,7 +343,7 @@ namespace L_L.Business.Services
             // Iterate through users and increment the count based on login type and month
             foreach (var user in listUserTypeLogin)
             {
-                var createDate = DateTime.Parse(user.CreateDate.ToString());
+                var createDate = DateTime.Parse(user?.CreateDate.ToString() ?? DateTime.Now.ToString());
 
                 // Map month to corresponding index (1-based to 0-based)
                 var monthIndex = createDate.Month - 1;
