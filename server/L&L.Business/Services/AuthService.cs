@@ -170,6 +170,7 @@ namespace L_L.Business.Services
                 Avatar = req.Avatar,
                 OTPCode = "0",
                 TypeLogin = "Google",
+                CreateDate = DateTimeOffset.Now,
                 RoleID = req.TypeAccount == "Customer" ? 2 : req.TypeAccount == "Driver" ? 3 : 0 // Adjust 0 if you have a default RoleID
             };
             
