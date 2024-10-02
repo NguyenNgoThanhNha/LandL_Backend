@@ -170,7 +170,8 @@ namespace L_L.Business.Services
 
         public async Task<OrderDetailsModel> AddDriverToOrderDetail(AcceptDriverRequest req, int driverId)
         {
-            var orderDetail = await unitOfWorks.OrderDetailRepository.GetByIdAsync(int.Parse(req.orderDetailId));
+            var orderDetail = await unitOfWorks.OrderDetailRepository.FindByCondition(x => x.OrderDetailId == int.Parse(req.orderDetailId))
+                .Include(x => x.ProductInfo).FirstOrDefaultAsync();
             if (orderDetail == null)
             {
                 throw new BadRequestException("Order detail not found!");
