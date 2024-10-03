@@ -214,6 +214,33 @@ namespace L_L.API.Controllers
                 data = listOrderDetail
             }));
         }
+
+        [Authorize(Roles = "Driver")]
+        [HttpGet("GetOrderDetailByOrderDetailId/{id}")]
+        public async Task<IActionResult> GetOrderDetailByOrderDetailId([FromRoute] int id)
+        {
+            // Lấy token từ header
+            if (!Request.Headers.TryGetValue("Authorization", out var token))
+            {
+                return Unauthorized(ApiResult<ResponseMessage>.Error(new ResponseMessage
+                {
+                    message = "Authorization header is missing."
+                }));
+            }
+
+            var orderDetail = await orderDetailService.GetOrderDetailByOrderDetailId(id);
+            if (orderDetail == null)
+            {
+                return BadRequest(ApiResult<ResponseMessage>.Error(new ResponseMessage()
+                {
+                    message = "Order Detail not found!"
+                }));
+            }
+            return Ok(ApiResult<GetOrderDetailResponse>.Succeed(new GetOrderDetailResponse()
+            {
+                data = orderDetail
+            }));
+        }
         
         [Authorize(Roles = "Customer")] 
         [HttpPost("Create_Order")]

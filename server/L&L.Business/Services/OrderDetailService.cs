@@ -172,5 +172,11 @@ namespace L_L.Business.Services
            }
             return null;
         }
+
+        public async Task<OrderDetailsModel> GetOrderDetailByOrderDetailId(int id)
+        {
+            var orderDetail = await unitOfWorks.OrderDetailRepository.GetByIdAsync(id);
+            return mapper.Map<OrderDetailsModel>(orderDetail);
+        }
     }
 }
