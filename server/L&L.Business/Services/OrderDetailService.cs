@@ -175,7 +175,13 @@ namespace L_L.Business.Services
 
         public async Task<OrderDetailsModel> GetOrderDetailByOrderDetailId(int id)
         {
-            var orderDetail = await unitOfWorks.OrderDetailRepository.GetByIdAsync(id);
+            var orderDetail = await unitOfWorks.OrderDetailRepository.FindByCondition(x => x.OrderDetailId == id)
+                .Include(x => x.OrderInfo)
+                .Include(x => x.ProductInfo)
+                .Include(x => x.DeliveryInfoDetail)
+                .Include(x => x.TruckInfo)
+                .Include(x => x.UserOrder)
+                .FirstOrDefaultAsync();
             return mapper.Map<OrderDetailsModel>(orderDetail);
         }
     }
