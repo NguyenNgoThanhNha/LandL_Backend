@@ -505,6 +505,7 @@ namespace L_L.Business.Services
                     .FindByCondition(x => x.OrderId == int.Parse(orderId) && x.SenderId == user.UserId)
                     .Include(x => x.DeliveryInfoDetail)
                     .Include(x => x.ProductInfo)
+                    .Include(x => x.TruckInfo)
                     .OrderByDescending(x => x.StartDate)
                     .ToListAsync();
             }
@@ -514,6 +515,7 @@ namespace L_L.Business.Services
                     .FindByCondition(x => x.OrderId == int.Parse(orderId))
                     .Include(x => x.DeliveryInfoDetail)
                     .Include(x => x.ProductInfo)
+                    .Include(x => x.TruckInfo)
                     .OrderByDescending(x => x.StartDate)
                     .ToListAsync();
                 if (!listOrderDetail.Any() || listOrderDetail == null)

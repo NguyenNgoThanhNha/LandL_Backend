@@ -3,6 +3,7 @@ using L_L.Business.Commons.Request;
 using L_L.Business.Commons.Response;
 using L_L.Business.Models;
 using L_L.Business.Services;
+using L_L.Business.Ultils;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -13,10 +14,12 @@ namespace L_L.API.Controllers
     public class UserController : ControllerBase
     {
         private readonly UserService userService;
+        private readonly MailService _mailService;
 
-        public UserController(UserService userService)
+        public UserController(UserService userService, MailService mailService)
         {
             this.userService = userService;
+            _mailService = mailService;
         }
 
         [HttpGet("Get1")]
@@ -311,6 +314,49 @@ namespace L_L.API.Controllers
                 data = listUserTypeLogin
             }));
         }
+
+        [HttpGet("SendDetailCost")]
+        public async Task<IActionResult> SendDetailCost([FromQuery] string email)
+        {
+            var mailData = new MailData()
+            {
+                EmailToId = email,
+                EmailToName = "KayC",
+                EmailBody = $@"
+<div style=""max-width: 600px; margin: 50px auto; padding: 30px; text-align: center; font-size: 120%; background-color: #f9f9f9; border-radius: 10px; box-shadow: 0 0 20px rgba(0, 0, 0, 0.1); position: relative;"">
+    <h2 style=""text-transform: uppercase; color: #3498db; margin-top: 20px; font-size: 28px; font-weight: bold;"">Bảng giá sản phẩm</h2>
+    <p style=""font-size: 18px; color: #555; margin-bottom: 30px;"">Chúng tôi gửi bạn bảng giá của 2 loại sản phẩm bên dưới:</p>
+    
+    <div style=""margin-bottom: 20px;"">
+        <h3 style=""color: #3498db;"">Bảng giá cước vận chuyển xe tải:</h3>
+        <img src=""https://res.cloudinary.com/dgezepi0f/image/upload/v1728304438/c8soj0baqqhzs33odl2a.png"" alt=""Bảng giá sản phẩm 1"" style=""max-width: 100%; height: auto; display: block; margin: 0 auto;"">
+    </div>
+    
+    <div>
+        <h3 style=""color: #3498db;"">Bảng quy chuẩn hàng hóa vận chuyển xe tải:</h3>
+        <img src=""https://res.cloudinary.com/dgezepi0f/image/upload/v1728304449/mxvewtx7xj03lrysvany.png"" alt=""Bảng giá sản phẩm 2"" style=""max-width: 100%; height: auto; display: block; margin: 0 auto;"">
+    </div>
+
+    <p style=""color: #888; font-size: 14px; margin-top: 30px;"">Powered by Team L&L</p>
+</div>",
+                EmailSubject = "Bảng giá sản phẩm"
+            };
+
+            var result = await _mailService.SendEmailAsync(mailData, true);
+            if (!result)
+            {
+                return BadRequest(ApiResult<ResponseMessage>.Error(new ResponseMessage()
+                {
+                    message = "Send email fail!"
+                }));
+            }
+
+            return Ok(ApiResult<ResponseMessage>.Succeed(new ResponseMessage()
+            {
+                message = "Send email successfully!"
+            }));
+        }
+
 
     }
 }

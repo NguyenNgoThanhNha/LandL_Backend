@@ -14,7 +14,7 @@ namespace L_L.Business.Services
             _mailSettings = mailSettingsOptions.Value;
         }
 
-        public async Task<bool> SendEmailAsync(MailData mailData)
+        public async Task<bool> SendEmailAsync(MailData mailData, bool isCost)
         {
             try
             {
@@ -28,6 +28,30 @@ namespace L_L.Business.Services
                 {
                     HtmlBody = mailData.EmailBody
                 };
+
+                if (isCost)
+                {
+                    // Thêm file đính kèm từ URL
+                    var urls = new List<string>
+                    {
+                        "https://res.cloudinary.com/dgezepi0f/image/upload/v1728304449/mxvewtx7xj03lrysvany.png",
+                        "https://res.cloudinary.com/dgezepi0f/image/upload/v1728304438/c8soj0baqqhzs33odl2a.png"
+                    };
+
+                    using (var httpClient = new HttpClient())
+                    {
+                        foreach (var url in urls)
+                        {
+                            var fileBytes = await httpClient.GetByteArrayAsync(url);
+                            var fileName = Path.GetFileName(new Uri(url).AbsolutePath);
+                    
+                            // Đính kèm file từ stream
+                            bodyBuilder.Attachments.Add(fileName, fileBytes);
+                        }
+                    }
+                }
+
+                
                 emailMessage.Body = bodyBuilder.ToMessageBody();
 
                 using (var client = new SmtpClient())
