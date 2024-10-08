@@ -614,5 +614,52 @@ namespace L_L.Business.Services
             return dataCounts;
         }
 
+        public async Task<OrderModel> AddOrderDetailToOrder(int orderId, int orderDetailId, int userId)
+        {
+            var order = await unitOfWorks.OrderRepository.FindByCondition(x => x.OrderId == orderId && x.DriverId == userId)
+                .FirstOrDefaultAsync();
+            if (order == null)
+            {
+                throw new BadRequestException("Order of driver not found!");
+            }
+
+            var orderDetail = await unitOfWorks.OrderDetailRepository.GetByIdAsync(orderDetailId);
+            if (orderDetail == null)
+            {
+                throw new BadRequestException("Order detail not found! So can not add to Order!");
+            }
+
+            var orderOfOrderDetail = await unitOfWorks.OrderRepository.GetByIdAsync((int)orderDetail?.OrderId);
+            
+            // update order detail
+            orderDetail.OrderId = order.OrderId;
+            var orderDetailUpdate = unitOfWorks.OrderDetailRepository.Update(orderDetail);
+            var result = await unitOfWorks.OrderDetailRepository.Commit();
+            if (orderDetailUpdate == null || result <= 0)
+            {
+                throw new BadRequestException("Error in add order detail to order!");
+            }
+            
+            // update order
+            order.TotalAmount += orderOfOrderDetail?.TotalAmount;
+            order.SystemAmount += orderOfOrderDetail?.SystemAmount;
+            order.DriverAmount += orderOfOrderDetail?.DriverAmount;
+            order.VAT += orderOfOrderDetail?.VAT;
+            order.OrderCount += 1;
+            order.Notes += $"\n Add new order detail with id = {orderDetail.OrderDetailId}";
+
+            orderOfOrderDetail.Notes = $"Transfor order detail to order with id = {order.OrderId}";
+            
+            
+            var orderUpdate = unitOfWorks.OrderRepository.Update(order);
+            var orderOfOrderDetailUpdate =  unitOfWorks.OrderRepository.Update(orderOfOrderDetail);
+            var resultUpdateOrder = await unitOfWorks.OrderRepository.Commit();
+            if (resultUpdateOrder > 0)
+            {
+                return _mapper.Map<OrderModel>(orderUpdate);
+            }
+            return null;
+        }
+
     }
 }

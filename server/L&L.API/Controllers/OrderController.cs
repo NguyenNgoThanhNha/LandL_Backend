@@ -5,6 +5,7 @@ using L_L.Business.Models;
 using L_L.Business.Services;
 using L_L.Business.Ultils;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 
 namespace L_L.API.Controllers
@@ -546,6 +547,55 @@ namespace L_L.API.Controllers
             return Ok(ApiResult<GetOrderAmountResponse>.Succeed(new GetOrderAmountResponse()
             {
                 data = listData
+            }));
+        }
+
+        [Authorize(Roles = "Driver")]
+        [HttpPost("AddOrderDetailToOrder")]
+        public async Task<IActionResult> AddOrderDetailToOrder([FromBody] AddOrderDetailToOrderRequest request)
+        {
+            if (!ModelState.IsValid)
+            {
+                var errors = ModelState.Values
+                    .SelectMany(v => v.Errors)
+                    .Select(e => e.ErrorMessage)
+                    .ToList();
+
+                return BadRequest(ApiResult<List<string>>.Error(errors));
+            }
+            // Lấy token từ header
+            if (!Request.Headers.TryGetValue("Authorization", out var token))
+            {
+                return Unauthorized(ApiResult<ResponseMessage>.Error(new ResponseMessage
+                {
+                    message = "Authorization header is missing."
+                }));
+            }
+
+            // Chia tách token
+            var tokenValue = token.ToString().Split(' ')[1];
+            var currentUser = await userService.GetUserInToken(tokenValue);
+
+            if (currentUser == null)
+            {
+                return BadRequest(ApiResult<ResponseMessage>.Error(new ResponseMessage
+                {
+                    message = "Driver not found."
+                }));
+            }
+
+            var orderUpdate = await orderService.AddOrderDetailToOrder(request.orderId, request.orderDetailId , currentUser.UserId);
+            if (orderUpdate == null)
+            {
+                return BadRequest(ApiResult<ResponseMessage>.Error(new ResponseMessage
+                {
+                    message = "Error in add order detail to order!"
+                }));
+            }
+            
+            return Ok(ApiResult<AddOrderDetailToOrderResponse>.Succeed(new AddOrderDetailToOrderResponse()
+            {
+                data = orderUpdate
             }));
         }
         
