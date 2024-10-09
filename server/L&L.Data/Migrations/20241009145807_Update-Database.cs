@@ -40,6 +40,23 @@ namespace L_L.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Guess",
+                columns: table => new
+                {
+                    GuessId = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    email = table.Column<string>(type: "text", nullable: false),
+                    phone = table.Column<int>(type: "integer", nullable: true),
+                    status = table.Column<string>(type: "text", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "timestamp without time zone", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Guess", x => x.GuessId);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "PackageType",
                 columns: table => new
                 {
@@ -324,6 +341,7 @@ namespace L_L.Data.Migrations
                     SystemAmount = table.Column<decimal>(type: "numeric", nullable: true),
                     VAT = table.Column<decimal>(type: "numeric", nullable: true),
                     OrderCount = table.Column<int>(type: "integer", nullable: true),
+                    Dimension = table.Column<string>(type: "text", nullable: true),
                     Status = table.Column<string>(type: "text", nullable: false),
                     Notes = table.Column<string>(type: "text", nullable: true),
                     DriverId = table.Column<int>(type: "integer", nullable: true),
@@ -650,6 +668,9 @@ namespace L_L.Data.Migrations
         {
             migrationBuilder.DropTable(
                 name: "BlogRating");
+
+            migrationBuilder.DropTable(
+                name: "Guess");
 
             migrationBuilder.DropTable(
                 name: "Hub");

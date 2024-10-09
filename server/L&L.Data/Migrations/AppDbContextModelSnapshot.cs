@@ -144,6 +144,36 @@ namespace L_L.Data.Migrations
                     b.ToTable("DeliveryInfo");
                 });
 
+            modelBuilder.Entity("L_L.Data.Entities.Guess", b =>
+                {
+                    b.Property<int>("GuessId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("GuessId"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("email")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int?>("phone")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("status")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("GuessId");
+
+                    b.ToTable("Guess");
+                });
+
             modelBuilder.Entity("L_L.Data.Entities.Hub", b =>
                 {
                     b.Property<int>("HubId")
@@ -295,6 +325,9 @@ namespace L_L.Data.Migrations
                         .HasColumnType("integer");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("OrderId"));
+
+                    b.Property<string>("Dimension")
+                        .HasColumnType("text");
 
                     b.Property<decimal?>("DriverAmount")
                         .HasColumnType("numeric");

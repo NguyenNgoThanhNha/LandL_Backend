@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace L_L.Data.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20240930163842_Update-Database")]
+    [Migration("20241009145807_Update-Database")]
     partial class UpdateDatabase
     {
         /// <inheritdoc />
@@ -145,6 +145,36 @@ namespace L_L.Data.Migrations
                     b.HasKey("DeliveryInfoId");
 
                     b.ToTable("DeliveryInfo");
+                });
+
+            modelBuilder.Entity("L_L.Data.Entities.Guess", b =>
+                {
+                    b.Property<int>("GuessId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("GuessId"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("email")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int?>("phone")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("status")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("GuessId");
+
+                    b.ToTable("Guess");
                 });
 
             modelBuilder.Entity("L_L.Data.Entities.Hub", b =>
@@ -298,6 +328,9 @@ namespace L_L.Data.Migrations
                         .HasColumnType("integer");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("OrderId"));
+
+                    b.Property<string>("Dimension")
+                        .HasColumnType("text");
 
                     b.Property<decimal?>("DriverAmount")
                         .HasColumnType("numeric");

@@ -13,7 +13,7 @@ public class OrderModel
     public decimal? SystemAmount { get; set; }
     public decimal? VAT { get; set; }
     public int? OrderCount { get; set; }
-
+    public string? DismenSion { get; set; }
     public string Status { get; set; } = string.Empty;
 
     public string? Notes { get; set; }

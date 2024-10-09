@@ -22,6 +22,8 @@ namespace L_L.Data.Entities
         public decimal? VAT { get; set; }
 
         public int? OrderCount { get; set; }
+        
+        public string? Dimension { get; set; } // check length, width, height
 
         public string Status { get; set; } = string.Empty;
 

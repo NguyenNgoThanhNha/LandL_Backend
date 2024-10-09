@@ -32,6 +32,7 @@ namespace L_L.Data.Entities
         public DbSet<IdentityCard> IdentityCards { get; set; }
         public DbSet<LicenseDriver> LicenseDrivers { get; set; }
 
+        public DbSet<Guess> Guess { get; set; }
         #endregion
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

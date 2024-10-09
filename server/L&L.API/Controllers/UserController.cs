@@ -15,11 +15,13 @@ namespace L_L.API.Controllers
     {
         private readonly UserService userService;
         private readonly MailService _mailService;
+        private readonly GuessService _guessService;
 
-        public UserController(UserService userService, MailService mailService)
+        public UserController(UserService userService, MailService mailService, GuessService guessService)
         {
             this.userService = userService;
             _mailService = mailService;
+            _guessService = guessService;
         }
 
         [HttpGet("Get1")]
@@ -341,7 +343,7 @@ namespace L_L.API.Controllers
 </div>",
                 EmailSubject = "Bảng giá sản phẩm"
             };
-
+            var resultGuess = await _guessService.CreateNewGuess(email);
             var result = await _mailService.SendEmailAsync(mailData, true);
             if (!result)
             {

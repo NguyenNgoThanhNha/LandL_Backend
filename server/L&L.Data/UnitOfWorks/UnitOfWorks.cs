@@ -20,6 +20,7 @@ namespace L_L.Data.UnitOfWorks
         private ServiceCostRepository _serviceCostRepo;
         private IdentityCardRepository _identityCardRepo;
         private LicenseDriverRepository _licenseDriverRepo;
+        private GuessRepository _guessRepo;
 
         public UnitOfWorks(AppDbContext dbContext)
         {
@@ -91,6 +92,11 @@ namespace L_L.Data.UnitOfWorks
         public LicenseDriverRepository LicenseDriverRepository
         {
             get { return _licenseDriverRepo ??= new LicenseDriverRepository(_dbContext); }
+        }
+        
+        public GuessRepository GuessRepository
+        {
+            get { return _guessRepo ??= new GuessRepository(_dbContext); }
         }
     }
 }

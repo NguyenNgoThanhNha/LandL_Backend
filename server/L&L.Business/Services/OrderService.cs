@@ -170,8 +170,11 @@ namespace L_L.Business.Services
 
         public async Task<OrderDetailsModel> AddDriverToOrderDetail(AcceptDriverRequest req, int driverId)
         {
-            var orderDetail = await unitOfWorks.OrderDetailRepository.FindByCondition(x => x.OrderDetailId == int.Parse(req.orderDetailId))
-                .Include(x => x.ProductInfo).FirstOrDefaultAsync();
+            var orderDetail = await unitOfWorks.OrderDetailRepository
+                .FindByCondition(x => x.OrderDetailId == int.Parse(req.orderDetailId))
+                .Include(x => x.ProductInfo)
+                .FirstOrDefaultAsync();
+                
             if (orderDetail == null)
             {
                 throw new BadRequestException("Order detail not found!");
@@ -180,54 +183,61 @@ namespace L_L.Business.Services
             var order = await unitOfWorks.OrderRepository.GetByIdAsync((int)orderDetail.OrderId);
             if (order == null || order.OrderId != orderDetail.OrderId)
             {
-                throw new BadRequestException("Order detail of order are invalid!");
+                throw new BadRequestException("Order detail of order is invalid!");
             }
 
-            order.DriverId = driverId;
-            unitOfWorks.OrderRepository.Update(order);
-
-            var truckOfDriver = await unitOfWorks.TruckRepository.FindByCondition(x => x.UserId == order.DriverId).FirstOrDefaultAsync();
+            var truckOfDriver = await unitOfWorks.TruckRepository
+                .FindByCondition(x => x.UserId == driverId)
+                .FirstOrDefaultAsync();
+                
             if (truckOfDriver == null)
             {
                 throw new BadRequestException("Truck of driver not found!");
             }
 
+            // Update driver info and dimensions to order
+            order.DriverId = driverId;
+            order.Dimension = $"{truckOfDriver.DimensionsLength}x{truckOfDriver.DimensionsWidth}x{truckOfDriver.DimensionsHeight}";
+            unitOfWorks.OrderRepository.Update(order);
+
+            // Check if product dimensions fit the truck dimensions
             var product = orderDetail.ProductInfo;
-            var dimensions = product.TotalDismension.Split('x').Select(decimal.Parse).ToList();
-            decimal productLength = dimensions[0];
-            decimal productWidth = dimensions[1];
-            decimal productHeight = dimensions[2];
+            var productDimensions = product.TotalDismension.Split('x').Select(decimal.Parse).ToList();
+            var truckDimensions = order.Dimension.Split('x').Select(decimal.Parse).ToList();
 
-            truckOfDriver.DimensionsLength -= productLength;
-            truckOfDriver.DimensionsWidth -= productWidth;
-            truckOfDriver.DimensionsHeight -= productHeight;
+            if (truckDimensions[0] >= productDimensions[0] &&
+                truckDimensions[1] >= productDimensions[1] &&
+                truckDimensions[2] >= productDimensions[2])
+            {
+                order.Dimension = $"{truckDimensions[0] - productDimensions[0]}x{truckDimensions[1] - productDimensions[1]}x{truckDimensions[2] - productDimensions[2]}";
+            }
+            else
+            {
+                throw new BadRequestException("Total dimension of product is bigger than total dimension of truck");
+            }
 
-            // add truck to order detail
+            // Assign truck to order detail
             orderDetail.TruckId = truckOfDriver.TruckId;
             orderDetail.Status = StatusEnums.InProcess.ToString();
+            unitOfWorks.OrderDetailRepository.Update(orderDetail);
 
-            unitOfWorks.TruckRepository.Update(truckOfDriver);
-            var orderDetailUpdate =   unitOfWorks.OrderDetailRepository.Update(orderDetail);
-
-            var orderDetailRes = await unitOfWorks.OrderDetailRepository
-                .FindByCondition(x => x.OrderDetailId == orderDetailUpdate.OrderDetailId)
-                .Include(x => x.OrderInfo)
-                .Include(x => x.ProductInfo)
-                .Include(x => x.DeliveryInfoDetail)
-                .Include(x => x.UserOrder)
-                .Include(x => x.TruckInfo)
-                .FirstOrDefaultAsync();
-            
             var result = await unitOfWorks.OrderRepository.Commit();
-
             if (result > 0)
             {
+                var orderDetailRes = await unitOfWorks.OrderDetailRepository
+                    .FindByCondition(x => x.OrderDetailId == orderDetail.OrderDetailId)
+                    .Include(x => x.OrderInfo)
+                    .Include(x => x.ProductInfo)
+                    .Include(x => x.DeliveryInfoDetail)
+                    .Include(x => x.UserOrder)
+                    .Include(x => x.TruckInfo)
+                    .FirstOrDefaultAsync();
+
                 return _mapper.Map<OrderDetailsModel>(orderDetailRes);
             }
 
-            return null;;
+            return null;
         }
-
 
         public async Task<ProductsModel> UpdateProductInOrderDetail(UpdateProductInfoRequest req)
         {
