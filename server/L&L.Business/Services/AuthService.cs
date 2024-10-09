@@ -96,7 +96,7 @@ namespace L_L.Business.Services
 
         public async Task<LoginResult> SignIn(string email, string password)
         {
-            var user = _unitOfWorks.AuthRepository.FindByCondition(u => u.Email == email).FirstOrDefault();
+            var user = _unitOfWorks.AuthRepository.FindByCondition(u => u.Email.ToLower() == email.ToLower()).FirstOrDefault();
 
 
             if (user is null || user.Status == "InActive")
@@ -143,7 +143,7 @@ namespace L_L.Business.Services
         {
             var handler = new JwtSecurityTokenHandler();
             SecurityToken refreshToken = null;
-            var user = _unitOfWorks.AuthRepository.FindByCondition(u => u.Email == req.Email).FirstOrDefault();
+            var user = _unitOfWorks.AuthRepository.FindByCondition(u => u.Email.ToLower() == req.Email.ToLower()).FirstOrDefault();
 
             if (user != null)
             {
@@ -204,7 +204,7 @@ namespace L_L.Business.Services
 
         public async Task<UserModel> GetUserByEmail(string email)
         {
-            return _mapper.Map<UserModel>(_unitOfWorks.UserRepository.FindByCondition(x => x.Email == email).FirstOrDefault());
+            return _mapper.Map<UserModel>(_unitOfWorks.UserRepository.FindByCondition(x => x.Email.ToLower() == email.ToLower()).FirstOrDefault());
         }
 
         public async Task<UserModel> GetUserInToken(string token)
