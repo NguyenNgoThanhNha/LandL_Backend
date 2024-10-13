@@ -365,6 +365,22 @@ namespace L_L.Business.Services
 
             return DataMonth;
         }
+
+        public async Task<bool> DeleteAccount(UserModel user)
+        {
+            var userDeleted = unitOfWorks.UserRepository.Remove(user.UserId);
+            if (userDeleted != null)
+            {
+                var result = await unitOfWorks.UserRepository.Commit();
+                if (result > 0)
+                {
+                    return true;
+                }
+
+                return false;
+            }
+            return false;
+        }
         
         private bool IsValidFullName(string fullName)
         {
