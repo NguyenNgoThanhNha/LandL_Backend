@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace L_L.Data.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20241009145807_Update-Database")]
+    [Migration("20241014143525_Update-Database")]
     partial class UpdateDatabase
     {
         /// <inheritdoc />
@@ -158,21 +158,35 @@ namespace L_L.Data.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp without time zone");
 
+                    b.Property<int>("RoleID")
+                        .HasColumnType("integer");
+
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("timestamp without time zone");
+
+                    b.Property<int?>("age")
+                        .HasColumnType("integer");
 
                     b.Property<string>("email")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<int?>("phone")
-                        .HasColumnType("integer");
+                    b.Property<string>("licenseType")
+                        .HasColumnType("text");
+
+                    b.Property<string>("phone")
+                        .HasColumnType("text");
+
+                    b.Property<string>("priorityAddress")
+                        .HasColumnType("text");
 
                     b.Property<string>("status")
                         .IsRequired()
                         .HasColumnType("text");
 
                     b.HasKey("GuessId");
+
+                    b.HasIndex("RoleID");
 
                     b.ToTable("Guess");
                 });
@@ -898,6 +912,17 @@ namespace L_L.Data.Migrations
                     b.Navigation("BlogRate");
 
                     b.Navigation("UserRate");
+                });
+
+            modelBuilder.Entity("L_L.Data.Entities.Guess", b =>
+                {
+                    b.HasOne("L_L.Data.Entities.UserRole", "GuessRole")
+                        .WithMany()
+                        .HasForeignKey("RoleID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("GuessRole");
                 });
 
             modelBuilder.Entity("L_L.Data.Entities.Hub", b =>

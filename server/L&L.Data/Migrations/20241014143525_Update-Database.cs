@@ -40,23 +40,6 @@ namespace L_L.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Guess",
-                columns: table => new
-                {
-                    GuessId = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    email = table.Column<string>(type: "text", nullable: false),
-                    phone = table.Column<int>(type: "integer", nullable: true),
-                    status = table.Column<string>(type: "text", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
-                    UpdatedAt = table.Column<DateTime>(type: "timestamp without time zone", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Guess", x => x.GuessId);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "PackageType",
                 columns: table => new
                 {
@@ -122,6 +105,33 @@ namespace L_L.Data.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_VehicleType", x => x.VehicleTypeId);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Guess",
+                columns: table => new
+                {
+                    GuessId = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    email = table.Column<string>(type: "text", nullable: false),
+                    phone = table.Column<string>(type: "text", nullable: true),
+                    age = table.Column<int>(type: "integer", nullable: true),
+                    priorityAddress = table.Column<string>(type: "text", nullable: true),
+                    licenseType = table.Column<string>(type: "text", nullable: true),
+                    RoleID = table.Column<int>(type: "integer", nullable: false),
+                    status = table.Column<string>(type: "text", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "timestamp without time zone", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Guess", x => x.GuessId);
+                    table.ForeignKey(
+                        name: "FK_Guess_UserRole_RoleID",
+                        column: x => x.RoleID,
+                        principalTable: "UserRole",
+                        principalColumn: "RoleId",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -566,6 +576,11 @@ namespace L_L.Data.Migrations
                 name: "IX_BlogRating_UserId",
                 table: "BlogRating",
                 column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Guess_RoleID",
+                table: "Guess",
+                column: "RoleID");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Hub_RecipientId",

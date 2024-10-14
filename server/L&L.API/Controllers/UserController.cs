@@ -24,7 +24,7 @@ namespace L_L.API.Controllers
             _guessService = guessService;
         }
 
-        [HttpGet("Get1")]
+        /*[HttpGet("Get1")]
         [HttpGet("Get2")]
         [HttpGet("Get3")]
         public async Task<IActionResult> GetAuthor()
@@ -87,7 +87,7 @@ namespace L_L.API.Controllers
             {
                 message = "This action can only be accessed by Admins."
             }));
-        }
+        }*/
 
 
 
@@ -396,6 +396,23 @@ namespace L_L.API.Controllers
                 message = "Delete user successfully!"
             }));
         }
+        
+        [HttpPost("CollectInfoCustomer")]
+        public async Task<IActionResult> CollectInfoCustomer([FromBody] CollectInfoCustomerRequest request)
+        {
+            var result = await _guessService.CollectInfoCustomer(request);
+            if (!result)
+            {
+                return BadRequest(ApiResult<ResponseMessage>.Error(new ResponseMessage()
+                {
+                    message = "Error in collect info user!"
+                }));
+            }
+            return Ok(ApiResult<ResponseMessage>.Succeed(new ResponseMessage()
+            {
+                message = "Collect info user successfully!"
+            }));
+        } 
 
     }
 }

@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using L_L.Business.Commons.Request;
 using L_L.Business.Exceptions;
 using L_L.Business.Models;
 using L_L.Data.Entities;
@@ -49,6 +50,46 @@ public class GuessService
         }
 
         throw new BadRequestException("Error in processing guess info");
+    }
+    
+    public async Task<bool> CollectInfoCustomer(CollectInfoCustomerRequest request)
+    {
+        var guessInfo = await _unitOfWorks.GuessRepository
+            .FindByCondition(x => x.email.ToLower() == request.email.ToLower())
+            .FirstOrDefaultAsync();
+        if (guessInfo != null)
+        {
+            guessInfo.phone = request.phone != null ? request.phone : guessInfo.phone;
+            guessInfo.age = request.age != 0 ? request.age : guessInfo.age;
+            guessInfo.priorityAddress = request.priorityAddress != null ? request.priorityAddress : guessInfo.priorityAddress;
+            var guessUpdate = _unitOfWorks.GuessRepository.Update(guessInfo);
+            if (guessUpdate == null)
+            {
+                throw new BadRequestException("Error in update info guess!");
+            }
+        }
+        else
+        {
+            var guessModel = new GuessModel()
+            {
+                email = request.email.ToLower(),
+                phone = request.phone != null ? request.phone : null,
+                age = request.age != 0 ? request.age : 0,
+                priorityAddress = request.priorityAddress != null ? request.priorityAddress : null,
+                licenseType = request.licenseType != null ? request.licenseType : null,
+                status = "Active",
+                RoleID = 3,
+                CreatedAt = DateTime.Now
+            };
+            var guessCreate = _mapper.Map<Guess>(guessModel);
+            await _unitOfWorks.GuessRepository.AddAsync(guessCreate);
+        }
+        var result = await _unitOfWorks.GuessRepository.Commit();
+        if (result > 0)
+        {
+            return true;
+        }
+        return false;
     }
 
 }
