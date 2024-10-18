@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace L_L.Data.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20241014143525_Update-Database")]
+    [Migration("20241018060212_Update-Database")]
     partial class UpdateDatabase
     {
         /// <inheritdoc />
@@ -304,8 +304,8 @@ namespace L_L.Data.Migrations
                     b.Property<DateTime?>("dob")
                         .HasColumnType("timestamp without time zone");
 
-                    b.Property<DateTime?>("doe")
-                        .HasColumnType("timestamp without time zone");
+                    b.Property<string>("doe")
+                        .HasColumnType("text");
 
                     b.Property<string>("id")
                         .HasColumnType("text");

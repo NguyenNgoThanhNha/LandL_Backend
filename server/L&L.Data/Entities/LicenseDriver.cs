@@ -15,7 +15,7 @@ public class LicenseDriver
     public string? address { get; set; }
     public string? place_issue { get; set; }
     public DateTime? date { get; set; }
-    public DateTime? doe { get; set; }
+    public string? doe { get; set; }
     public string? classLicense { get; set; }
     public string? type { get; set; }
     public string? imageFront { get; set; }

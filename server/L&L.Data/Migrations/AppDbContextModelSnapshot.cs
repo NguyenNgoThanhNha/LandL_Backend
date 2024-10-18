@@ -301,8 +301,8 @@ namespace L_L.Data.Migrations
                     b.Property<DateTime?>("dob")
                         .HasColumnType("timestamp without time zone");
 
-                    b.Property<DateTime?>("doe")
-                        .HasColumnType("timestamp without time zone");
+                    b.Property<string>("doe")
+                        .HasColumnType("text");
 
                     b.Property<string>("id")
                         .HasColumnType("text");

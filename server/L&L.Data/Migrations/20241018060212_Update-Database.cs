@@ -321,7 +321,7 @@ namespace L_L.Data.Migrations
                     address = table.Column<string>(type: "text", nullable: true),
                     place_issue = table.Column<string>(type: "text", nullable: true),
                     date = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
-                    doe = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    doe = table.Column<string>(type: "text", nullable: true),
                     classLicense = table.Column<string>(type: "text", nullable: true),
                     type = table.Column<string>(type: "text", nullable: true),
                     imageFront = table.Column<string>(type: "text", nullable: true),
