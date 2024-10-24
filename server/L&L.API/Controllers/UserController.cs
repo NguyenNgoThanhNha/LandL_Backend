@@ -16,12 +16,14 @@ namespace L_L.API.Controllers
         private readonly UserService userService;
         private readonly MailService _mailService;
         private readonly GuessService _guessService;
+        private readonly TransactionService _transactionService;
 
-        public UserController(UserService userService, MailService mailService, GuessService guessService)
+        public UserController(UserService userService, MailService mailService, GuessService guessService, TransactionService transactionService)
         {
             this.userService = userService;
             _mailService = mailService;
             _guessService = guessService;
+            _transactionService = transactionService;
         }
 
         /*[HttpGet("Get1")]
@@ -412,7 +414,76 @@ namespace L_L.API.Controllers
             {
                 message = "Collect info user successfully!"
             }));
-        } 
+        }
+
+        [Authorize(Roles = "Driver")]
+        [HttpPost("withdraw-request")]
+        public async Task<IActionResult> WithdrawMoney([FromBody] CreateTransactionRequest request)
+        {
+            // Lấy token từ header
+            if (!Request.Headers.TryGetValue("Authorization", out var token))
+            {
+                return Unauthorized(ApiResult<ResponseMessage>.Error(new ResponseMessage
+                {
+                    message = "Authorization header is missing."
+                }));
+            }
+
+            // Chia tách token
+            var tokenValue = token.ToString().Split(' ')[1];
+            var currentUser = await userService.GetUserInToken(tokenValue);
+            if (currentUser == null)
+            {
+                return BadRequest(ApiResult<ResponseMessage>.Error(new ResponseMessage()
+                {
+                    message = "Driver not found!"
+                }));
+            }
+
+            var result = await _transactionService.CreateTransactionRequest(request, currentUser.UserId.ToString());
+            if (!result)
+            {
+                return BadRequest(ApiResult<ResponseMessage>.Error(new ResponseMessage()
+                {
+                    message = "Error in create withdraw request, please try again!"
+                }));
+            }
+            
+            return Ok(ApiResult<ResponseMessage>.Succeed(new ResponseMessage()
+            {
+                message = "Create withdraw successfully!"
+            }));
+        }
+
+        [Authorize(Roles = "Admin")]
+        [HttpPut("update-status-transaction")]
+        public async Task<IActionResult> UpdateStatusTransaction([FromForm]UpdateStatusTransactionRequest request)
+        {
+            if (!ModelState.IsValid)
+            {
+                var errors = ModelState.Values
+                    .SelectMany(v => v.Errors)
+                    .Select(e => e.ErrorMessage)
+                    .ToList();
+
+                return BadRequest(ApiResult<List<string>>.Error(errors));
+            }
+
+            var updateTransaction =
+                await _transactionService.UpdateStatusTransaction(request);
+            if (updateTransaction == null)
+            {
+                return BadRequest(ApiResult<ResponseMessage>.Error(new ResponseMessage()
+                {
+                    message = "Error in update status transaction, please try again!"
+                }));
+            }
+            
+            return Ok(ApiResult<UpdateStatusTransactionResponse>.Succeed(new UpdateStatusTransactionResponse()
+            {
+                data = updateTransaction
+            }));
+        }
 
     }
 }

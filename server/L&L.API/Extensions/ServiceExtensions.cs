@@ -127,6 +127,7 @@ namespace L_L.API.Extensions
             services.AddScoped<IdentityCardService>();
             services.AddScoped<LicenseDriverService>();
             services.AddScoped<GuessService>();
+            services.AddScoped<TransactionService>();
 
             services.AddSingleton<IAuthorizationHandler, AdminHandler>();
             return services;

@@ -72,8 +72,22 @@ namespace L_L.API.Controllers
 
                 var orderDetail = await _unitOfWorks.OrderDetailRepository
                     .FindByCondition(x => x.OrderDetailCode == code)
+                    .Include(x => x.OrderInfo)
                     .FirstOrDefaultAsync();
 
+                var orderInfo = orderDetail?.OrderInfo;
+                if (orderInfo != null)
+                {
+                    var driver = await _unitOfWorks.UserRepository.FindByCondition(x => x.UserId == orderInfo.DriverId)
+                        .FirstOrDefaultAsync();
+                    if (driver != null)
+                    {
+                        driver.AccountBalance = orderInfo.DriverAmount.ToString();
+                        _unitOfWorks.UserRepository.Update(driver);
+                        await _unitOfWorks.UserRepository.Commit();
+                    }
+                }
+                
                 if (orderDetail == null)
                 {
                     return BadRequest(ApiResult<ResponseMessage>.Error(new ResponseMessage()

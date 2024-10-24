@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace L_L.Data.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20241018060212_Update-Database")]
+    [Migration("20241024083318_Update-Database")]
     partial class UpdateDatabase
     {
         /// <inheritdoc />
@@ -646,6 +646,13 @@ namespace L_L.Data.Migrations
                         .HasColumnType("integer");
 
                     b.Property<string>("Note")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("imagePay")
                         .HasColumnType("text");
 
                     b.HasKey("TransactionId");

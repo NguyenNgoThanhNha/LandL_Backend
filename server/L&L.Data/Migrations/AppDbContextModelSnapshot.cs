@@ -645,6 +645,13 @@ namespace L_L.Data.Migrations
                     b.Property<string>("Note")
                         .HasColumnType("text");
 
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("imagePay")
+                        .HasColumnType("text");
+
                     b.HasKey("TransactionId");
 
                     b.HasIndex("AdminId");

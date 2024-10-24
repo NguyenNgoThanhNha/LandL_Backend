@@ -20,6 +20,7 @@ namespace L_L.Business.Mappers
             CreateMap<IdentityCard, IdentityCardModel>().ReverseMap();
             CreateMap<LicenseDriver, LicenseDriverModel>().ReverseMap();
             CreateMap<Guess, GuessModel>().ReverseMap();
+            CreateMap<Transaction, TransactionModel>().ReverseMap();
         }
     }
 }
