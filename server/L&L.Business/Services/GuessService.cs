@@ -37,6 +37,7 @@ public class GuessService
             {
                 email = email.ToLower(),
                 status = "Active",
+                RoleID = 2,
                 CreatedAt = DateTime.Now
             };
             var guessCreate = _mapper.Map<Guess>(guessModel);
