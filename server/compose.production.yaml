@@ -21,6 +21,7 @@ services:
       - PayOSSetting__ClientId=${PayOSClientId}
       - PayOSSetting__ApiKey=${PayOSApiKey}
       - PayOSSetting__ChecksumKey=${PayOSChecksumKey}
+      - PayOSSetting__Domain=${PayOSDomain}
     ports:
       - 8080:8080
     depends_on:
