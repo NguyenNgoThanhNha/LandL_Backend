@@ -8,6 +8,8 @@ nupkg/
 # Visual Studio Code
 .vscode/
 
+compose.yaml
+L&L.API/appsettings.json
 # Rider
 .idea/
 
