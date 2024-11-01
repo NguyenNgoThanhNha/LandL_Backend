@@ -31,3 +31,4 @@ jobs:
           PayOSClientId: ${{ secrets.PayOSClientId }}
           PayOSApiKey: ${{ secrets.PayOSApiKey }}
           PayOSChecksumKey: ${{ secrets.PayOSChecksumKey }}
+          PayOSDomain: ${{ secrets.PayOSDomain }}

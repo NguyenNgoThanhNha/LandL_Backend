@@ -144,15 +144,15 @@ namespace L_L.Business.Services
 
             _mapper.Map(order, existingOrder);
 
-           var orderUpdate = unitOfWorks.OrderRepository.Update(existingOrder);
+            var orderUpdate = unitOfWorks.OrderRepository.Update(existingOrder);
 
-          var result =  await unitOfWorks.OrderRepository.Commit();
-          if (result > 0)
-          {
-              return _mapper.Map<OrderModel>(orderUpdate);
-          }
+            var result = await unitOfWorks.OrderRepository.Commit();
+            if (result > 0)
+            {
+                return _mapper.Map<OrderModel>(orderUpdate);
+            }
 
-          return null;
+            return null;
         }
 
         public async Task<List<OrderDetailsModel>> PublicOrder()
@@ -174,7 +174,7 @@ namespace L_L.Business.Services
                 .FindByCondition(x => x.OrderDetailId == int.Parse(req.orderDetailId))
                 .Include(x => x.ProductInfo)
                 .FirstOrDefaultAsync();
-                
+
             if (orderDetail == null)
             {
                 throw new BadRequestException("Order detail not found!");
@@ -189,7 +189,7 @@ namespace L_L.Business.Services
             var truckOfDriver = await unitOfWorks.TruckRepository
                 .FindByCondition(x => x.UserId == driverId)
                 .FirstOrDefaultAsync();
-                
+
             if (truckOfDriver == null)
             {
                 throw new BadRequestException("Truck of driver not found!");
@@ -412,6 +412,7 @@ namespace L_L.Business.Services
             // Execute PayOS
             var payOS = new PayOS(_payOsSetting.ClientId, _payOsSetting.ApiKey, _payOsSetting.ChecksumKey);
             var domain = _payOsSetting.Domain;
+            Console.WriteLine("domain: ", domain);
 
             var product = await unitOfWorks.ProductRepository.GetByIdAsync((int)orderDetail.ProductId);
             var amount = Convert.ToInt32(req.totalAmount);
@@ -640,7 +641,7 @@ namespace L_L.Business.Services
             }
 
             var orderOfOrderDetail = await unitOfWorks.OrderRepository.GetByIdAsync((int)orderDetail?.OrderId);
-            
+
             // update order detail
             orderDetail.OrderId = order.OrderId;
             var orderDetailUpdate = unitOfWorks.OrderDetailRepository.Update(orderDetail);
@@ -649,7 +650,7 @@ namespace L_L.Business.Services
             {
                 throw new BadRequestException("Error in add order detail to order!");
             }
-            
+
             // update order
             order.TotalAmount += orderOfOrderDetail?.TotalAmount;
             order.SystemAmount += orderOfOrderDetail?.SystemAmount;
@@ -659,10 +660,10 @@ namespace L_L.Business.Services
             order.Notes += $"\n Add new order detail with id = {orderDetail.OrderDetailId}";
 
             orderOfOrderDetail.Notes = $"Transfor order detail to order with id = {order.OrderId}";
-            
-            
+
+
             var orderUpdate = unitOfWorks.OrderRepository.Update(order);
-            var orderOfOrderDetailUpdate =  unitOfWorks.OrderRepository.Update(orderOfOrderDetail);
+            var orderOfOrderDetailUpdate = unitOfWorks.OrderRepository.Update(orderOfOrderDetail);
             var resultUpdateOrder = await unitOfWorks.OrderRepository.Commit();
             if (resultUpdateOrder > 0)
             {
