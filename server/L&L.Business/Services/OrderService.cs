@@ -671,5 +671,10 @@ namespace L_L.Business.Services
             return null;
         }
 
+        public async Task<bool> SeedingOrder()
+        {
+            return false;
+        }
+
     }
 }

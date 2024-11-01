@@ -1,0 +1,43 @@
+version: '3.8'
+
+services:
+  server:
+    build:
+      context: .
+      target: final
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ConnectionStrings__PgDbConnection=Server=database;Database=LandL;User ID=postgres;Password=${PgPassword};Trust Server Certificate=true;
+      - JwtSettings__Key=${JwtKey}
+      - JwtSettings__Refresh=${JwtRefreshKey}
+      - MailSettings__UserName=${MailUserName}
+      - MailSettings__PassWord=${MailPassword}
+      - CloundSettings__CloundName=${CloundName}
+      - CloundSettings__CloundKey=${CloundKey}
+      - CloundSettings__CloundSecret=${CloundSecret}
+      - ZaloPaySetting__app_id=${ZaloPayAppId}
+      - ZaloPaySetting__key1=${ZaloPayKey1}
+      - ZaloPaySetting__key2=${ZaloPayKey2}
+      - PayOSSetting__ClientId=${PayOSClientId}
+      - PayOSSetting__ApiKey=${PayOSApiKey}
+      - PayOSSetting__ChecksumKey=${PayOSChecksumKey}
+    ports:
+      - 8080:8080
+    depends_on:
+      database:
+        condition: service_started
+
+  database:
+    image: postgres:16
+    container_name: database
+    environment:
+      - POSTGRES_DB=LandL
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=${PgPassword}
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+    ports:
+      - 5435:5432
+
+volumes:
+  pg_data:
