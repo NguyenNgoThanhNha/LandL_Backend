@@ -77,34 +77,34 @@ namespace L_L.Business.Services
                 if (existedUser != null)
                 {
                     // Cập nhật thông tin người dùng từ req
-                    if (!string.IsNullOrEmpty(req.UserName))
+                    if (!string.IsNullOrEmpty(req.userName))
                     {
-                        existedUser.UserName = req.UserName;
-                        existedUser.ModifyBy = req.UserName;
+                        existedUser.UserName = req.userName;
+                        existedUser.ModifyBy = req.userName;
                     }
-                    if (!string.IsNullOrEmpty(req.Password))
+                    if (!string.IsNullOrEmpty(req.passWord))
                     {
-                        existedUser.Password = SecurityUtil.Hash(req.Password);
+                        existedUser.Password = SecurityUtil.Hash(req.passWord);
                     }
-                    if (!string.IsNullOrEmpty(req.FullName))
+                    if (!string.IsNullOrEmpty(req.fullName))
                     {
-                        if (!IsValidFullName(req.FullName))
+                        if (!IsValidFullName(req.fullName))
                         {
                             return null;
                         }
-                        existedUser.FullName = req.FullName;
+                        existedUser.FullName = req.fullName;
                     }
-                    if (!string.IsNullOrEmpty(req.City))
+                    if (!string.IsNullOrEmpty(req.city))
                     {
-                        existedUser.City = req.City;
+                        existedUser.City = req.city;
                     }
-                    if (!string.IsNullOrEmpty(req.Gender))
+                    if (!string.IsNullOrEmpty(req.gender))
                     {
-                        existedUser.Gender = req.Gender;
+                        existedUser.Gender = req.gender;
                     }
-                    if (!string.IsNullOrEmpty(req.Address))
+                    if (!string.IsNullOrEmpty(req.address))
                     {
-                        existedUser.Address = req.Address;
+                        existedUser.Address = req.address;
                     }
                     if (!string.IsNullOrEmpty(req.STK))
                     {
@@ -114,21 +114,21 @@ namespace L_L.Business.Services
                     {
                         existedUser.Bank = req.Bank;
                     }
-                    if (req.BirthDate.HasValue)
+                    if (req.birthDate.HasValue)
                     {
-                        existedUser.BirthDate = req.BirthDate;
+                        existedUser.BirthDate = req.birthDate;
                     }
-                    if (!string.IsNullOrEmpty(req.PhoneNumber))
+                    if (!string.IsNullOrEmpty(req.phoneNumber))
                     {
-                        if (!IsValidPhoneNumber(req.PhoneNumber))
+                        if (!IsValidPhoneNumber(req.phoneNumber))
                         {
                             return null;
                         }
-                        existedUser.PhoneNumber = req.PhoneNumber;
+                        existedUser.PhoneNumber = req.phoneNumber;
                     }
-                    if (req.Avatar != null)
+                    if (req.avatar != null)
                     {
-                        var uploadResult = await cloudService.UploadImageAsync(req.Avatar);
+                        var uploadResult = await cloudService.UploadImageAsync(req.avatar);
 
                         if (uploadResult.Error == null)
                         {
