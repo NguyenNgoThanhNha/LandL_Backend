@@ -88,7 +88,7 @@ namespace L_L.Business.Services
                     }
                     if (!string.IsNullOrEmpty(req.fullName))
                     {
-                        if (!IsValidFullName(req.fullName))
+                        if (IsValidFullName(req.fullName))
                         {
                             return null;
                         }
