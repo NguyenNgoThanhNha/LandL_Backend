@@ -31,6 +31,11 @@ public class TransactionService
             throw new BadRequestException("Driver not found");
         }
 
+        if (driver.AccountBalance == null)
+        {
+            driver.AccountBalance = "0";
+        }
+
         if (decimal.Parse(request.amount) > decimal.Parse(driver.AccountBalance))
         {
             throw new BadRequestException("Request amount not larger than account balance!");
