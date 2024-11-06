@@ -1,8 +1,8 @@
-# Leopard Lorry - LandL_Backend
+# Leopard Lorry - L&L_Backend
 🚛 **Innovative Transport Solution for Truck Drivers in Vietnam**
 
-## 🖼️ Illustration
-![Leopard Lorry Screenshot](./server/Note/logo-LL.jpg)
+## 🖼️ Logo Team L&L (Leopard Lorry)
+<img src="./server/Note/logo-LL.jpg" alt="Leopard Lorry Screenshot" width="300">
 
 **Leopard Lorry** is a groundbreaking sharing economy platform aimed at optimizing transport solutions for truck drivers in Vietnam. By allowing them to use empty space for additional cargo, the platform not only helps drivers increase their income but also contributes to reducing operational costs without requiring route changes.
 
