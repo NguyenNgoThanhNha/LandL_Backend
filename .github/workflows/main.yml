@@ -20,6 +20,10 @@ jobs:
           PgPassword: ${{ secrets.PgPassword }}
           JwtKey: ${{ secrets.JwtKey }}
           JwtRefreshKey: ${{ secrets.JwtRefreshKey }}
+          MailServer: ${{ secrets.MailServer }}
+          MailPort: ${{ secrets.MailPort }}
+          MailSenderName: ${{ secrets.MailSenderName }}
+          MailSenderEmail: ${{ secrets.MailSenderEmail }}
           MailUserName: ${{ secrets.MailUserName }}
           MailPassword: ${{ secrets.MailPassword }}
           CloundName: ${{ secrets.CloundName }}
